@@ -2,6 +2,9 @@ export function initPagination() {
   const paginateToggle = document.getElementById('paginateToggle');
   const paginateFirstPage = document.getElementById('paginateFirstPage');
 
+  paginateToggle.checked = false;
+  paginateFirstPage.checked = false;
+
   paginateToggle.addEventListener('change', function() {
     if (!this.checked) {
       paginateFirstPage.checked = false;
