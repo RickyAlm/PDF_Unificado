@@ -1,6 +1,5 @@
-/* Theme CSS Variables */
+/* Variáveis - Tema Padrão (Light) */
 :root {
-  /* Default (Light) Theme */
   --bg-color: #f8f9fa;
   --card-bg: #ffffff;
   --text-color: #212529;
@@ -15,7 +14,7 @@
   --shadow: rgba(0, 0, 0, 0.1);
 }
 
-/* Dark Theme Override */
+/* Substituição Variáveis - Tema Dark */
 :root[data-theme="dark"],
 body[data-theme="dark"] {
   --bg-color: #1a1a1a;
@@ -176,7 +175,7 @@ body {
   color: var(--text-muted) !important;
 }
 
-/* Dark theme specific styles */
+/* Estilos específicos para o tema escuro */
 body[data-theme="dark"] .card-header.bg-primary {
   background-color: #0d6efd !important;
 }
@@ -242,7 +241,8 @@ body[data-theme="dark"] .text-select-pdf {
 #previewBtn:hover {
   transform: translateY(-2px);
 }
-/* Toggle de Tema */
+
+/* Mudança de Tema */
 .theme-toggle-wrapper {
   position: relative;
   display: inline-block;
@@ -314,7 +314,7 @@ body[data-theme="dark"] .text-select-pdf {
   background-color: #2d2d2d;
 }
 
-/* Responsive adjustments for theme toggle */
+/* Ajustes responsivos para a mudança de tema */
 @media (max-width: 768px) {
   .card-header .d-flex {
     flex-wrap: wrap;
