@@ -136,7 +136,10 @@ Sistema completo para merge de arquivos PDF que permite:
 - Recomendado para arquivos de tamanho moderado (depende da memória disponível)
 - As fontes Century Gothic e Poppins são licenciadas conforme seus respectivos arquivos de licença
 
-## 📄 Licenças de Fontes
+## 📄 Licenças
+
+Este projeto está sob a licença **MIT**. <br>
+Uso livre para fins de **estudo e aprendizado**.
 
 - **Century Gothic**: © The Monotype Corporation plc (ver COPYRIGHT.txt)
 - **Poppins**: SIL Open Font License 1.1 (ver OFL.txt)
@@ -150,6 +153,6 @@ Contribuições são bem-vindas! Sinta-se à vontade para:
 
 ---
 
-Desenvolvido por: Henrique Almeida
-Repositório: github.com/RickyAlm/PDF_Unificado
-Demo Online: rickyalm.github.io/PDF_Unificado
+**Desenvolvido por:** Henrique Almeida <br>
+**Repositório:** [github.com/RickyAlm/PDF_Unificado](github.com/RickyAlm/PDF_Unificado) <br>
+**Demo Online:** [rickyalm.github.io/PDF_Unificado](rickyalm.github.io/PDF_Unificado)
