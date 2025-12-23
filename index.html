@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>UnificadorPDFs - Unifique seus PDFs</title>
+  <title>Unificador de PDF - Unifique seus PDFs</title>
   <link rel="shortcut icon" href="assets/img/favicon.ico" type="image/x-icon">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -17,11 +17,21 @@
       <div class="col-lg-8 col-md-10">
         <div class="card shadow-lg">
           <div class="card-header bg-primary text-white">
-            <div class="d-flex align-items-center">
-              <i class="fas fa-file-pdf me-3 fs-1"></i>
-              <div>
-                <h1 class="h3 mb-0">UnificadorPDFs</h1>
-                <p class="mb-0">Unifique múltiplos PDFs em um único arquivo</p>
+            <div class="d-flex align-items-center justify-content-between">
+              <div class="d-flex align-items-center">
+                <i class="fas fa-file-pdf me-3 fs-1"></i>
+                <div>
+                  <h1 class="h3 mb-0">Unificador de PDF</h1>
+                  <p class="mb-0">Unifique múltiplos arquivos PDF em um único arquivo</p>
+                </div>
+              </div>
+              <div class="theme-toggle-wrapper">
+                <input type="checkbox" id="themeToggle" class="theme-toggle-checkbox" aria-label="Alternar tema claro/escuro">
+                <label for="themeToggle" class="theme-toggle-label">
+                  <i class="fas fa-sun theme-icon-sun"></i>
+                  <i class="fas fa-moon theme-icon-moon"></i>
+                  <span class="theme-toggle-slider"></span>
+                </label>
               </div>
             </div>
           </div>
@@ -29,7 +39,7 @@
           <div class="card-body p-4">
             <div class="text-center mb-4">
               <i class="fas fa-file-import fs-1 text-primary mb-3"></i>
-              <h2 class="h4">Selecione seus arquivos PDF</h2>
+              <h2 class="h4 text-select-pdf">Selecione seus arquivos PDF</h2>
               <p class="text-muted">Arraste e solte ou clique para selecionar</p>
             </div>
 
@@ -105,6 +115,7 @@
   <script src="https://unpkg.com/downloadjs@^1.4.7"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="assets/js/themeManager.js"></script>
   <script type="module" src="assets/js/main.js"></script>
 </body>
 </html>

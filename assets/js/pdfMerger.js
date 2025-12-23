@@ -90,25 +90,23 @@ export function initPDFMerger(pdfInput, mergeBtn) {
   }
 
   function showInvalidNameAlert() {
-    Swal.fire({
+    showThemedSwal({
       icon: 'error',
       title: 'Nome inválido',
-      text: 'O nome não pode conter: / \\ : * ? " < > |',
-      confirmButtonColor: '#0d6efd'
+      text: 'O nome não pode conter: / \\ : * ? " < > |'
     });
   }
 
   function showNoFilesAlert() {
-    Swal.fire({
+    showThemedSwal({
       icon: 'warning',
       title: 'Oops...',
-      text: 'Selecione pelo menos um arquivo PDF!',
-      confirmButtonColor: '#0d6efd'
+      text: 'Selecione pelo menos um arquivo PDF!'
     });
   }
 
   function showProcessingAlert() {
-    Swal.fire({
+    showThemedSwal({
       title: 'Processando...',
       html: 'Unificando seus arquivos PDF. Por favor, aguarde.',
       allowOutsideClick: false,
@@ -118,7 +116,7 @@ export function initPDFMerger(pdfInput, mergeBtn) {
 
   function showSuccessAlert(fileCount, pageCount, pdfBytes, pdfName) {
     Swal.close();
-    Swal.fire({
+    showThemedSwal({
       icon: 'success',
       title: 'Pronto!',
       html: `Seu PDF com ${fileCount} arquivo(s) unificado(s) e ${pageCount} páginas está pronto.<br><br>
@@ -145,11 +143,10 @@ export function initPDFMerger(pdfInput, mergeBtn) {
 
   function handleMergeError(error) {
     console.error('Erro ao unificar PDFs:', error);
-    Swal.fire({
+    showThemedSwal({
       icon: 'error',
       title: 'Erro',
-      text: 'Ocorreu um erro ao processar os arquivos. Verifique se todos são PDFs válidos.',
-      confirmButtonColor: '#0d6efd'
+      text: 'Ocorreu um erro ao processar os arquivos. Verifique se todos são PDFs válidos.'
     });
   }
 }
