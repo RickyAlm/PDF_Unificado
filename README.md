@@ -156,3 +156,5 @@ Contribuições são bem-vindas! Sinta-se à vontade para:
 **Desenvolvido por:** Henrique Almeida <br>
 **Repositório:** [github.com/RickyAlm/PDF_Unificado](github.com/RickyAlm/PDF_Unificado) <br>
 **Demo Online:** [rickyalm.github.io/PDF_Unificado](rickyalm.github.io/PDF_Unificado)
+
+---
