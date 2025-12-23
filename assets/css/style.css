@@ -1,33 +1,71 @@
+/* Theme CSS Variables */
+:root {
+  /* Default (Light) Theme */
+  --bg-color: #f8f9fa;
+  --card-bg: #ffffff;
+  --text-color: #212529;
+  --text-muted: #6c757d;
+  --border-color: #dee2e6;
+  --dropzone-bg: #f8f9fa;
+  --dropzone-hover: #e9ecef;
+  --dropzone-active: #e2f0ff;
+  --sortable-bg: #f8f9fa;
+  --input-bg: #ffffff;
+  --input-border: #ced4da;
+  --shadow: rgba(0, 0, 0, 0.1);
+}
+
+/* Dark Theme Override */
+:root[data-theme="dark"],
+body[data-theme="dark"] {
+  --bg-color: #1a1a1a;
+  --card-bg: #2d2d2d;
+  --text-color: #e9ecef;
+  --text-muted: #adb5bd;
+  --border-color: #495057;
+  --dropzone-bg: #2d2d2d;
+  --dropzone-hover: #3a3a3a;
+  --dropzone-active: #1e3a5f;
+  --sortable-bg: #343a40;
+  --input-bg: #343a40;
+  --input-border: #495057;
+  --shadow: rgba(0, 0, 0, 0.1);
+}
+
 body {
-    background-color: #f8f9fa;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  }
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
 
 .card {
   border: none;
   border-radius: 15px;
   overflow: hidden;
+  background-color: var(--card-bg);
+  box-shadow: 0 0.5rem 1rem var(--shadow);
 }
 
 .dropzone {
-  background-color: #f8f9fa;
-  border-color: #dee2e6 !important;
+  background-color: var(--dropzone-bg);
+  border-color: var(--border-color) !important;
   transition: all 0.3s ease;
   cursor: pointer;
 }
 
 .dropzone:hover {
-  background-color: #e9ecef;
+  background-color: var(--dropzone-hover);
   border-color: #adb5bd !important;
 }
 
 .dropzone.active {
-  background-color: #e2f0ff;
+  background-color: var(--dropzone-active);
   border-color: #0d6efd !important;
 }
 
 #fileNames {
-  color: #495057;
+  color: var(--text-color);
   font-size: 0.9rem;
 }
 
@@ -52,24 +90,32 @@ body {
 
 .form-label {
   font-weight: 500;
-  color: #495057;
+  color: var(--text-color);
 }
 
 .form-control {
   border-radius: 8px;
   padding: 10px 15px;
-  border: 1px solid #ced4da;
+  background-color: var(--input-bg);
+  border: 1px solid var(--input-border);
+  color: var(--text-color);
   transition: border-color 0.3s ease;
 }
 
 .form-control:focus {
+  background-color: var(--input-bg);
+  color: var(--text-color);
   border-color: #86b7fe;
   box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
 }
 
+.form-control::placeholder {
+  color: #6c757d;
+}
+
 .form-text {
   font-size: 0.8rem;
-  color: #6c757d;
+  color: var(--text-muted);
 }
 
 .sortable-list {
@@ -84,8 +130,9 @@ body {
   justify-content: space-between;
   padding: 8px 12px;
   margin-bottom: 5px;
-  background-color: #f8f9fa;
-  border: 1px solid #dee2e6;
+  background-color: var(--sortable-bg);
+  border: 1px solid var(--border-color);
+  color: var(--text-color);
   border-radius: 5px;
   cursor: grab;
 }
@@ -107,12 +154,49 @@ body {
 
 .sortable-ghost {
   opacity: 0.5;
-  background: #c8ebfb;
+  background: var(--dropzone-active);
 }
 
 .modal-content {
   border-radius: 15px;
   overflow: hidden;
+  background-color: var(--card-bg);
+  color: var(--text-color);
+}
+
+.modal-header {
+  border-bottom: 1px solid var(--border-color);
+}
+
+.modal-footer {
+  border-top: 1px solid var(--border-color);
+}
+
+.text-muted {
+  color: var(--text-muted) !important;
+}
+
+/* Dark theme specific styles */
+body[data-theme="dark"] .card-header.bg-primary {
+  background-color: #0d6efd !important;
+}
+
+body[data-theme="dark"] .btn-close {
+  filter: invert(1);
+}
+
+body[data-theme="dark"] .btn-outline-primary {
+  border-color: #3b81e8;
+  color: #3b81e8;
+}
+
+body[data-theme="dark"] .btn-outline-primary:hover {
+  background-color: #0d6efd;
+  color: white;
+}
+
+body[data-theme="dark"] .text-select-pdf {
+  color: white !important;
 }
 
 .form-switch .form-check-input {
@@ -228,4 +312,40 @@ body {
 
 .theme-toggle-checkbox:checked + .theme-toggle-label {
   background-color: #2d2d2d;
+}
+
+/* Responsive adjustments for theme toggle */
+@media (max-width: 768px) {
+  .card-header .d-flex {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .theme-toggle-wrapper {
+    flex-shrink: 0;
+  }
+
+  .card-header h1 {
+    font-size: 1.25rem !important;
+  }
+
+  .card-header p {
+    font-size: 0.875rem;
+  }
+
+  .card-header .fs-1 {
+    font-size: 1.5rem !important;
+  }
+}
+
+@media (max-width: 576px) {
+  .card-header .d-flex.align-items-center {
+    flex-direction: column;
+    align-items: flex-start !important;
+  }
+
+  .theme-toggle-wrapper {
+    align-self: flex-end;
+    margin-top: 0.5rem;
+  }
 }

@@ -4,7 +4,6 @@ class ThemeManager {
     this.themeKey = 'pdf-unificado-theme';
     this.currentTheme = this.loadTheme();
     this.applyTheme(this.currentTheme);
-    this.setupToggleButton();
   }
 
   loadTheme() {
@@ -30,48 +29,21 @@ class ThemeManager {
     document.body.setAttribute('data-theme', theme);
     this.currentTheme = theme;
     this.updateToggleIcon();
-    this.configureSwal();
     this.updateCardShadow(theme);
   }
 
   updateCardShadow(theme) {
     const card = document.querySelector('.card');
-    if (card) {
-      if (theme === 'light') {
-        card.classList.add('shadow-lg');
-      } else {
-        card.classList.remove('shadow-lg');
-      }
+    if (!card) {
+      console.warn('Card element not found in DOM');
+      return;
     }
-  }
-
-  configureSwal() {
-    if (typeof Swal === 'undefined') return;
-
-    const isDark = this.currentTheme === 'dark';
-
-    // Configuração padrão do SweetAlert2 baseada no tema
-    const swalDefaults = isDark ? {
-      background: '#2d2d2d',
-      color: '#e9ecef',
-      confirmButtonColor: '#0d6efd',
-      cancelButtonColor: '#6c757d',
-      customClass: {
-        popup: 'swal-dark-popup',
-        title: 'swal-dark-title',
-        htmlContainer: 'swal-dark-html',
-        input: 'swal-dark-input',
-        actions: 'swal-dark-actions'
-      }
-    } : {
-      background: '#ffffff',
-      color: '#212529',
-      confirmButtonColor: '#0d6efd',
-      cancelButtonColor: '#6c757d'
-    };
-
-    // Aplica configuração padrão
-    Swal.mixin(swalDefaults).fire = Swal.fire;
+    
+    if (theme === 'light') {
+      card.classList.add('shadow-lg');
+    } else {
+      card.classList.remove('shadow-lg');
+    }
   }
 
   getSwalConfig(userConfig = {}) {
@@ -118,9 +90,12 @@ class ThemeManager {
   }
 }
 
-// Inicializa o gerenciador de tema quando o DOM estiver pronto
+// Inicializa o tema imediatamente (antes do DOM estar pronto)
+window.themeManager = new ThemeManager();
+
+// Configura o botão de toggle quando o DOM estiver pronto
 document.addEventListener('DOMContentLoaded', () => {
-  window.themeManager = new ThemeManager();
+  window.themeManager.setupToggleButton();
 });
 
 // Função auxiliar global para usar Swal com tema automático
