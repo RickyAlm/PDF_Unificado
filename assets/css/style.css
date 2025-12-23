@@ -242,6 +242,11 @@ body[data-theme="dark"] .text-select-pdf {
   transform: translateY(-2px);
 }
 
+#pdfIcon {
+  transition: transform 0.2s ease;
+  user-select: none;
+}
+
 /* Mudança de Tema */
 .theme-toggle-wrapper {
   position: relative;
