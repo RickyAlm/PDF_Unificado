@@ -59,29 +59,40 @@ Sistema completo para merge de arquivos PDF que permite:
 ## 📂 Estrutura do Projeto
 
 ```
-├── assets/
-│   ├── css/
-│   │   └── style.css
-│   ├── fonts/
-│   │   ├── CenturyGothic/
-│   │   │   ├── centurygothic.ttf
-│   │   │   └── COPYRIGHT.txt
-│   │   └── Poppins/
-│   │       └── OFL.txt
-│   ├── img/
-│   │   └── favicon.ico
-│   └── js/
-│       ├── dragAndDrop.js        # Gerenciamento de drag-and-drop
-│       ├── fileManagement.js     # Controle da lista de arquivos
-│       ├── hideConfiguration.js  # Easter egg das configurações (ignorar)
-│       ├── main.js              # Inicialização da aplicação
-│       ├── pagination.js        # Lógica de numeração de páginas
-│       ├── pdfMerger.js         # Processamento e merge dos PDFs
-│       ├── pdfViewer.js         # Visualização de PDFs
-│       ├── themeManager.js      # Gerenciamento de temas
-│       └── utils.js             # Funções utilitárias
-├── index.html
-└── .gitignore
+├── src/
+│   ├── index.html
+│   └── assets/
+│       ├── css/
+│       │   └── style.css
+│       ├── fonts/
+│       │   ├── CenturyGothic/
+│       │   │   ├── centurygothic_bold.ttf
+│       │   │   ├── centurygothic.ttf
+│       │   │   └── COPYRIGHT.txt
+│       │   └── Poppins/
+│       │       ├── OFL.txt
+│       │       ├── Poppins-Regular.ttf
+│       │       ├── Poppins-Bold.ttf
+│       │       └── Poppins-Medium.ttf
+│       ├── img/
+│       │   └── favicon.ico
+│       └── js/
+│           ├── core/
+│           │   └── main.js               # Inicialização da aplicação
+│           ├── pdf/
+│           │   ├── pdfMerger.js          # Processamento e merge dos PDFs
+│           │   └── pdfViewer.js          # Visualização de PDFs
+│           ├── ui/
+│           │   ├── dragAndDrop.js        # Gerenciamento de drag-and-drop
+│           │   ├── fileManagement.js     # Controle da lista de arquivos
+│           │   ├── hideConfiguration.js  # Easter egg das configurações (ignorar)
+│           │   ├── pagination.js         # Lógica de numeração de páginas
+│           │   └── themeManager.js       # Gerenciamento de temas
+│           └── utils/
+│               └── index.js              # Funções utilitárias
+├── .gitignore
+├── LICENSE
+└── README.md
 ```
 
 ## 🚀 Como Utilizar
