@@ -1,7 +1,7 @@
-import { initDragAndDrop } from './dragAndDrop.js';
-import { initFileManagement } from './fileManagement.js';
-import { initPagination } from './pagination.js';
-import { initPDFMerger } from './pdfMerger.js';
+import { initDragAndDrop } from '../ui/dragAndDrop.js';
+import { initFileManagement } from '../ui/fileManagement.js';
+import { initPagination } from '../ui/pagination.js';
+import { initPDFMerger } from '../pdf/pdfMerger.js';
 
 (() => {
   const pdfInput = document.getElementById('pdfInput');

@@ -1,5 +1,5 @@
-import { addPageNumbers } from './pagination.js';
-import { validateFileName, formatFileName } from './utils.js';
+import { addPageNumbers } from '../ui/pagination.js';
+import { validateFileName, formatFileName } from '../utils/index.js';
 import { previewPDF } from './pdfViewer.js';
 
 export function initPDFMerger(pdfInput, mergeBtn) {
