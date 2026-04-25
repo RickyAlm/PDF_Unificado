@@ -17,7 +17,7 @@ const DATE_OVERLAY_LAYOUT = {
   height: 0.083000,
   textOffsetX: 9,
   preferredFontSize: 16,
-  minFontSize: 8,
+  minFontSize: 11,
   padding: 2,
   backgroundColor: PDFLib.rgb(1, 1, 1),
   textColor: PDFLib.rgb(0, 0, 0)
@@ -35,10 +35,10 @@ export function initPagination() {
     return;
   }
 
-  paginateToggle.checked = false;
-  paginateFirstPage.checked = false;
-  customDateToggle.checked = false;
-  customDateFirstPage.checked = false;
+  paginateToggle.checked = true;
+  paginateFirstPage.checked = true;
+  customDateToggle.checked = true;
+  customDateFirstPage.checked = true;
   customDateInput.value = getTodayInputValue();
 
   const syncPaginateState = () => {
@@ -95,15 +95,23 @@ export function getProcessingSettings() {
 
 export async function loadOverlayFont(pdfDocument) {
   try {
-    if (typeof fontkit !== 'undefined') {
-      pdfDocument.registerFontkit(fontkit);
+    const fontkitInstance = window.fontkit || globalThis.fontkit;
+    if (!fontkitInstance) {
+      throw new Error('fontkit nao foi carregado no navegador');
     }
 
-    const fontBytes = await fetch('assets/fonts/CenturyGothic/centurygothic.ttf')
-      .then(res => res.arrayBuffer());
+    pdfDocument.registerFontkit(fontkitInstance);
+
+    const fontUrl = new URL('../../fonts/CenturyGothic/centurygothic.ttf', import.meta.url);
+    const fontResponse = await fetch(fontUrl);
+    if (!fontResponse.ok) {
+      throw new Error('Falha ao carregar centurygothic.ttf');
+    }
+
+    const fontBytes = await fontResponse.arrayBuffer();
     return await pdfDocument.embedFont(fontBytes);
-  } catch {
-    console.warn('Fonte Century Gothic não encontrada, usando Helvetica como fallback');
+  } catch (error) {
+    console.warn('Fonte Century Gothic não encontrada, usando Helvetica como fallback', error);
     return await pdfDocument.embedFont(PDFLib.StandardFonts.Helvetica);
   }
 }
