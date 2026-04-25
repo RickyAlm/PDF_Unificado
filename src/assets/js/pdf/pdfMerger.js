@@ -1,13 +1,12 @@
-import { addPageNumbers } from '../ui/pagination.js';
+import { addCustomDate, addPageNumbers, getProcessingSettings, loadOverlayFont } from '../ui/pagination.js';
 import { validateFileName, formatFileName } from '../utils/index.js';
 import { previewPDF } from './pdfViewer.js';
 
-export function initPDFMerger(pdfInput, mergeBtn) {
+export function initPDFMerger(getFiles, mergeBtn) {
   window.mergePDFs = async function() {
-    const inputFiles = pdfInput.files;
+    const inputFiles = getFiles();
     const pdfNameInput = document.getElementById('pdfName');
-    const paginateToggle = document.getElementById('paginateToggle');
-    const paginateFirstPage = document.getElementById('paginateFirstPage');
+    const settings = getProcessingSettings();
 
     if (!validateFileName(pdfNameInput.value.trim())) {
       showInvalidNameAlert();
@@ -26,8 +25,7 @@ export function initPDFMerger(pdfInput, mergeBtn) {
 
       const { mergedPdfBytes, totalPages } = await processPDFs(
         inputFiles,
-        paginateToggle.checked,
-        paginateFirstPage.checked
+        settings
       );
 
       showSuccessAlert(inputFiles.length, totalPages, mergedPdfBytes, pdfName);
@@ -36,12 +34,12 @@ export function initPDFMerger(pdfInput, mergeBtn) {
     }
   };
 
-  async function processPDFs(files, shouldPaginate, shouldPaginateFirstPage) {
+  async function processPDFs(files, settings) {
     const mergedPdf = await PDFLib.PDFDocument.create();
     let currentPageNumber = 0;
     let totalPages = 0;
 
-    const font = await loadFont(mergedPdf);
+    const font = await loadOverlayFont(mergedPdf);
 
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
@@ -57,8 +55,12 @@ export function initPDFMerger(pdfInput, mergeBtn) {
         currentPageNumber++;
         const newPage = mergedPdf.addPage(page);
 
-        if (shouldPaginate) {
-          addPageNumbers(newPage, currentPageNumber, totalPages, shouldPaginateFirstPage, font);
+        if (settings.shouldPaginate) {
+          addPageNumbers(newPage, currentPageNumber, totalPages, settings.shouldPaginateFirstPage, font);
+        }
+
+        if (settings.shouldApplyCustomDate && (settings.shouldApplyCustomDateFirstPage || currentPageNumber > 1)) {
+          addCustomDate(newPage, settings.customDate, font);
         }
       }
     }
@@ -76,17 +78,6 @@ export function initPDFMerger(pdfInput, mergeBtn) {
       total += tempPdfDoc.getPageCount();
     }
     return total;
-  }
-
-  async function loadFont(pdfDocument) {
-    try {
-      const fontBytes = await fetch('assets/fonts/CenturyGothic/centurygothic.ttf')
-        .then(res => res.arrayBuffer());
-      return await pdfDocument.embedFont(fontBytes);
-    } catch {
-      console.warn('Fonte Century Gothic não encontrada, usando Helvetica como fallback');
-      return await pdfDocument.embedFont(PDFLib.StandardFonts.Helvetica);
-    }
   }
 
   function showInvalidNameAlert() {

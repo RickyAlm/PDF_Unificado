@@ -1,10 +1,10 @@
 function initSecretSettings() {
   const pdfIcon = document.getElementById('pdfIcon');
-  const settingsBtn = document.getElementById('settingsBtn');
+  const settingsButtons = document.querySelectorAll('.settings-trigger');
   let clickCount = 0;
   let clickTimeout;
 
-  if (!pdfIcon || !settingsBtn) return;
+  if (!pdfIcon || settingsButtons.length === 0) return;
 
   pdfIcon.addEventListener('click', () => {
     clickCount++;
@@ -15,7 +15,7 @@ function initSecretSettings() {
     }, 2000);
 
     if (clickCount === 5) {
-      settingsBtn.classList.remove('d-none');
+      settingsButtons.forEach(button => button.classList.remove('d-none'));
       clickCount = 0;
 
       pdfIcon.style.transform = 'scale(1.2)';

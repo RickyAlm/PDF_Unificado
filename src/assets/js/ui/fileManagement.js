@@ -1,4 +1,4 @@
-import Sortable from 'https://cdn.jsdelivr.net/npm/sortablejs@latest/+esm';
+const ACCEPTED_PDF_TYPES = ['application/pdf'];
 
 export function initFileManagement(pdfInput, fileNames, mergeBtn) {
   let filesArray = [];
@@ -43,32 +43,63 @@ export function initFileManagement(pdfInput, fileNames, mergeBtn) {
     pdfInput.files = dataTransfer.files;
   }
 
-  function handleDrop(e) {
-    const dt = e.dataTransfer;
-    const newFiles = Array.from(dt.files);
-    filesArray.push(...newFiles);
+  function addFiles(files) {
+    const incomingFiles = Array.from(files);
+    const validFiles = incomingFiles.filter(isValidPdf);
+    const rejectedCount = incomingFiles.length - validFiles.length;
+
+    if (rejectedCount > 0) {
+      showThemedSwal({
+        icon: 'warning',
+        title: 'Formato nao suportado',
+        text: `${rejectedCount} arquivo(s) ignorado(s). Apenas PDFs sao aceitos.`
+      });
+    }
+
+    if (validFiles.length === 0) {
+      syncFileInput();
+      updateFileNames();
+      return;
+    }
+
+    filesArray.push(...validFiles);
     syncFileInput();
     updateFileNames();
   }
 
+  function isValidPdf(file) {
+    return ACCEPTED_PDF_TYPES.includes(file.type) || file.name.toLowerCase().endsWith('.pdf');
+  }
+
+  function handleDrop(e) {
+    const dt = e.dataTransfer;
+    addFiles(dt.files);
+  }
+
   pdfInput.addEventListener('change', (e) => {
-    const newFiles = Array.from(e.target.files);
-    filesArray.push(...newFiles);
-    syncFileInput();
-    updateFileNames();
+    addFiles(e.target.files);
+    pdfInput.value = '';
   });
 
-  new Sortable(fileNames, {
-    animation: 150,
-    ghostClass: 'sortable-ghost',
-    onEnd: function(evt) {
-      const movedItem = filesArray[evt.oldIndex];
-      filesArray.splice(evt.oldIndex, 1);
-      filesArray.splice(evt.newIndex, 0, movedItem);
-      syncFileInput();
-      updateFileNames();
-    }
-  });
+  if (window.Sortable) {
+    new window.Sortable(fileNames, {
+      animation: 150,
+      ghostClass: 'sortable-ghost',
+      onEnd: function(evt) {
+        const movedItem = filesArray[evt.oldIndex];
+        filesArray.splice(evt.oldIndex, 1);
+        filesArray.splice(evt.newIndex, 0, movedItem);
+        syncFileInput();
+        updateFileNames();
+      }
+    });
+  } else {
+    console.warn('Sortable nao foi carregado. A reordenacao de PDFs ficara indisponivel.');
+  }
 
   mergeBtn.disabled = true;
+
+  return {
+    getFiles: () => filesArray
+  };
 }

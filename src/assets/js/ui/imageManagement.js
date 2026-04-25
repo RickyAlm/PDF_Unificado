@@ -4,9 +4,8 @@
  * Espelho intencional do fileManagement.js — mesma estrutura, escopo isolado.
  */
 
-import Sortable from 'https://cdn.jsdelivr.net/npm/sortablejs@latest/+esm';
-
 const ACCEPTED_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+const ACCEPTED_EXTENSIONS = ['.jpg', '.jpeg', '.png', '.webp'];
 
 export function initImageManagement(imageInput, imageFileNames, convertBtn) {
   let imagesArray = [];
@@ -22,7 +21,7 @@ export function initImageManagement(imageInput, imageFileNames, convertBtn) {
       item.dataset.index = index;
       item.draggable = true;
 
-      const ext = file.type.split('/')[1].toUpperCase();
+      const ext = getFileExtensionLabel(file);
       const badge = `<span class="badge-ext badge-${ext.toLowerCase()}">${ext}</span>`;
 
       item.innerHTML = `
@@ -79,13 +78,24 @@ export function initImageManagement(imageInput, imageFileNames, convertBtn) {
   }
 
   function isValidImage(file) {
-    return ACCEPTED_TYPES.includes(file.type);
+    const fileName = file.name.toLowerCase();
+    return ACCEPTED_TYPES.includes(file.type) || ACCEPTED_EXTENSIONS.some(ext => fileName.endsWith(ext));
+  }
+
+  function getFileExtensionLabel(file) {
+    if (file.type?.includes('/')) {
+      return file.type.split('/')[1].toUpperCase();
+    }
+
+    const extension = file.name.split('.').pop();
+    return extension ? extension.toUpperCase() : 'IMG';
   }
 
   // ─── Event listeners ───────────────────────────────────────────────────────
 
   imageInput.addEventListener('change', (e) => {
     addImages(e.target.files);
+    imageInput.value = '';
   });
 
   // Drag-and-drop na dropzone do conversor
@@ -114,17 +124,21 @@ export function initImageManagement(imageInput, imageFileNames, convertBtn) {
 
   // ─── Drag-and-drop para reordenação ────────────────────────────────────────
 
-  new Sortable(imageFileNames, {
-    animation: 150,
-    ghostClass: 'sortable-ghost',
-    onEnd(evt) {
-      const moved = imagesArray[evt.oldIndex];
-      imagesArray.splice(evt.oldIndex, 1);
-      imagesArray.splice(evt.newIndex, 0, moved);
-      syncInput();
-      updateImageList();
-    }
-  });
+  if (window.Sortable) {
+    new window.Sortable(imageFileNames, {
+      animation: 150,
+      ghostClass: 'sortable-ghost',
+      onEnd(evt) {
+        const moved = imagesArray[evt.oldIndex];
+        imagesArray.splice(evt.oldIndex, 1);
+        imagesArray.splice(evt.newIndex, 0, moved);
+        syncInput();
+        updateImageList();
+      }
+    });
+  } else {
+    console.warn('Sortable nao foi carregado. A reordenacao de imagens ficara indisponivel.');
+  }
 
   convertBtn.disabled = true;
 

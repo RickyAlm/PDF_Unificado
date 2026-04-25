@@ -1,4 +1,8 @@
 export function initDragAndDrop(dropzone, pdfInput) {
+  if (!dropzone || !pdfInput) {
+    return;
+  }
+
   ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
     dropzone.addEventListener(eventName, preventDefaults, false);
   });
@@ -30,6 +34,6 @@ export function initDragAndDrop(dropzone, pdfInput) {
     const dt = e.dataTransfer;
     const files = dt.files;
     pdfInput.files = files;
-    return files; 
+    pdfInput.dispatchEvent(new Event('change', { bubbles: true }));
   }
 }

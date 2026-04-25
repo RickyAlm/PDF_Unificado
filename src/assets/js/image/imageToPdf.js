@@ -14,7 +14,8 @@
 
 import { initImageManagement } from '../ui/imageManagement.js';
 import { validateFileName, formatFileName } from '../utils/index.js';
-import { previewPDF } from './pdfViewer.js';
+import { previewPDF } from '../pdf/pdfViewer.js';
+import { addCustomDate, getProcessingSettings, loadOverlayFont } from '../ui/pagination.js';
 
 export function initImageConverter(imageInput, imageFileNames, convertBtn) {
   // Inicializa o gerenciador de lista e obtém acesso ao array interno
@@ -48,7 +49,7 @@ export function initImageConverter(imageInput, imageFileNames, convertBtn) {
     try {
       showProcessingAlert(images.length);
 
-      const pdfBytes = await buildPdfFromImages(images);
+      const pdfBytes = await buildPdfFromImages(images, getProcessingSettings());
 
       showSuccessAlert(images.length, pdfBytes, pdfName);
     } catch (error) {
@@ -58,10 +59,13 @@ export function initImageConverter(imageInput, imageFileNames, convertBtn) {
 
   // ─── Construção do PDF ────────────────────────────────────────────────────
 
-  async function buildPdfFromImages(images) {
+  async function buildPdfFromImages(images, settings) {
     const pdfDoc = await PDFLib.PDFDocument.create();
+    const font = settings.shouldApplyCustomDate
+      ? await loadOverlayFont(pdfDoc)
+      : null;
 
-    for (const file of images) {
+    for (const [index, file] of images.entries()) {
       const { jpegBytes, width, height } = await normalizeToJpeg(file);
 
       const embeddedImg = await pdfDoc.embedJpg(jpegBytes);
@@ -74,6 +78,10 @@ export function initImageConverter(imageInput, imageFileNames, convertBtn) {
         width,
         height
       });
+
+      if (settings.shouldApplyCustomDate && font && (settings.shouldApplyCustomDateFirstPage || index > 0)) {
+        addCustomDate(page, settings.customDate, font);
+      }
     }
 
     return await pdfDoc.save();

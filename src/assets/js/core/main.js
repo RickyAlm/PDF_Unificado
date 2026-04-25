@@ -13,9 +13,9 @@ import { initImageConverter } from '../image/imageToPdf.js';
   const mergeBtn     = document.getElementById('mergeBtn');
 
   initDragAndDrop(dropzone, pdfInput);
-  initFileManagement(pdfInput, fileNames, mergeBtn);
+  const { getFiles } = initFileManagement(pdfInput, fileNames, mergeBtn);
   initPagination();
-  initPDFMerger(pdfInput, mergeBtn);
+  initPDFMerger(getFiles, mergeBtn);
 
   // ─── Modo: Converter Imagens ────────────────────────────────────────────
   const imageInput      = document.getElementById('imageInput');
