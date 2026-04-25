@@ -20,7 +20,7 @@ export function initFileManagement(pdfInput, fileNames, mergeBtn) {
       fileNames.appendChild(fileItem);
     });
 
-    document.querySelectorAll('.remove-file').forEach(button => {
+    fileNames.querySelectorAll('.remove-file').forEach(button => {
       button.addEventListener('click', (e) => {
         e.stopPropagation();
         const index = parseInt(e.currentTarget.dataset.index);
@@ -45,6 +45,10 @@ export function initFileManagement(pdfInput, fileNames, mergeBtn) {
 
   function addFiles(files) {
     const incomingFiles = Array.from(files);
+    if (incomingFiles.length === 0) {
+      return;
+    }
+
     const validFiles = incomingFiles.filter(isValidPdf);
     const rejectedCount = incomingFiles.length - validFiles.length;
 

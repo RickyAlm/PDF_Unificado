@@ -33,6 +33,12 @@ export function initDragAndDrop(dropzone, pdfInput) {
   function handleDrop(e) {
     const dt = e.dataTransfer;
     const files = dt.files;
+
+    // Ignore internal drags (e.g., Sortable reordering), which do not carry files.
+    if (!files || files.length === 0) {
+      return;
+    }
+
     pdfInput.files = files;
     pdfInput.dispatchEvent(new Event('change', { bubbles: true }));
   }

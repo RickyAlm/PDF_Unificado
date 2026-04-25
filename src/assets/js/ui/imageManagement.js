@@ -35,7 +35,7 @@ export function initImageManagement(imageInput, imageFileNames, convertBtn) {
       imageFileNames.appendChild(item);
     });
 
-    document.querySelectorAll('.remove-file').forEach(btn => {
+    imageFileNames.querySelectorAll('.remove-file').forEach(btn => {
       btn.addEventListener('click', (e) => {
         e.stopPropagation();
         const index = parseInt(e.currentTarget.dataset.index);
@@ -49,8 +49,13 @@ export function initImageManagement(imageInput, imageFileNames, convertBtn) {
   // ─── Gerenciamento do array interno ────────────────────────────────────────
 
   function addImages(files) {
-    const valid = Array.from(files).filter(isValidImage);
-    const rejected = Array.from(files).length - valid.length;
+    const incomingFiles = Array.from(files);
+    if (incomingFiles.length === 0) {
+      return;
+    }
+
+    const valid = incomingFiles.filter(isValidImage);
+    const rejected = incomingFiles.length - valid.length;
 
     if (rejected > 0) {
       showThemedSwal({
