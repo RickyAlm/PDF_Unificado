@@ -12,6 +12,9 @@
   --input-bg: #ffffff;
   --input-border: #ced4da;
   --shadow: rgba(0, 0, 0, 0.1);
+  --tab-bg: #f8f9fa;
+  --tab-active-bg: #ffffff;
+  --tab-border: #dee2e6;
 }
 
 /* Substituição Variáveis - Tema Dark */
@@ -29,6 +32,9 @@ body[data-theme="dark"] {
   --input-bg: #343a40;
   --input-border: #495057;
   --shadow: rgba(0, 0, 0, 0.1);
+  --tab-bg: #343a40;
+  --tab-active-bg: #2d2d2d;
+  --tab-border: #495057;
 }
 
 body {
@@ -45,6 +51,41 @@ body {
   background-color: var(--card-bg);
   box-shadow: 0 0.5rem 1rem var(--shadow);
 }
+
+/* ─── Tabs de Modo ─────────────────────────────────────────────────────────── */
+
+.mode-tabs {
+  border-bottom: 2px solid var(--tab-border);
+}
+
+.mode-tabs .nav-link {
+  color: var(--text-muted);
+  background-color: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  padding: 0.6rem 1.2rem;
+  font-weight: 500;
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.mode-tabs .nav-link:hover {
+  color: var(--text-color);
+  border-bottom-color: var(--border-color);
+}
+
+.mode-tabs .nav-link.active {
+  color: #0d6efd;
+  background-color: transparent;
+  border-bottom: 2px solid #0d6efd;
+}
+
+body[data-theme="dark"] .mode-tabs .nav-link.active {
+  color: #4d9fff;
+  border-bottom-color: #4d9fff;
+}
+
+/* ─── Dropzone ─────────────────────────────────────────────────────────────── */
 
 .dropzone {
   background-color: var(--dropzone-bg);
@@ -63,10 +104,100 @@ body {
   border-color: #0d6efd !important;
 }
 
-#fileNames {
+/* ─── Lista de arquivos ────────────────────────────────────────────────────── */
+
+#fileNames,
+#imageFileNames {
   color: var(--text-color);
   font-size: 0.9rem;
 }
+
+.sortable-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.sortable-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  margin-bottom: 5px;
+  background-color: var(--sortable-bg);
+  border: 1px solid var(--border-color);
+  color: var(--text-color);
+  border-radius: 5px;
+  cursor: grab;
+  gap: 8px;
+}
+
+.sortable-item i.remove-file {
+  cursor: pointer;
+  color: #dc3545;
+  flex-shrink: 0;
+}
+
+.file-name-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 340px;
+}
+
+/* ─── Badges de extensão de imagem ────────────────────────────────────────── */
+
+.badge-ext {
+  display: inline-block;
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  flex-shrink: 0;
+}
+
+.badge-jpeg,
+.badge-jpg {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+.badge-png {
+  background-color: #cfe2ff;
+  color: #084298;
+}
+
+.badge-webp {
+  background-color: #d1e7dd;
+  color: #0a3622;
+}
+
+body[data-theme="dark"] .badge-jpeg,
+body[data-theme="dark"] .badge-jpg {
+  background-color: #3d2e00;
+  color: #ffc107;
+}
+
+body[data-theme="dark"] .badge-png {
+  background-color: #031633;
+  color: #6ea8fe;
+}
+
+body[data-theme="dark"] .badge-webp {
+  background-color: #051b11;
+  color: #75b798;
+}
+
+/* ─── Sortable ghost ───────────────────────────────────────────────────────── */
+
+.sortable-ghost {
+  opacity: 0.5;
+  background: var(--dropzone-active);
+}
+
+/* ─── Botões ───────────────────────────────────────────────────────────────── */
 
 .btn-primary {
   background-color: #0d6efd;
@@ -82,6 +213,28 @@ body {
   padding: 0.5rem 1.5rem;
   font-size: 1.1rem;
 }
+
+.btn-outline-primary {
+  border-color: #0d6efd;
+  color: #0d6efd;
+}
+
+.btn-outline-primary:hover {
+  background-color: #0d6efd;
+  color: white;
+}
+
+body[data-theme="dark"] .btn-outline-primary {
+  border-color: #3b81e8;
+  color: #3b81e8;
+}
+
+body[data-theme="dark"] .btn-outline-primary:hover {
+  background-color: #0d6efd;
+  color: white;
+}
+
+/* ─── Formulários ──────────────────────────────────────────────────────────── */
 
 .card-header {
   border-radius: 0 !important;
@@ -117,44 +270,7 @@ body {
   color: var(--text-muted);
 }
 
-.sortable-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.sortable-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 8px 12px;
-  margin-bottom: 5px;
-  background-color: var(--sortable-bg);
-  border: 1px solid var(--border-color);
-  color: var(--text-color);
-  border-radius: 5px;
-  cursor: grab;
-}
-
-.sortable-item i {
-  cursor: pointer;
-  color: #dc3545;
-}
-
-.btn-outline-primary {
-  border-color: #0d6efd;
-  color: #0d6efd;
-}
-
-.btn-outline-primary:hover {
-  background-color: #0d6efd;
-  color: white;
-}
-
-.sortable-ghost {
-  opacity: 0.5;
-  background: var(--dropzone-active);
-}
+/* ─── Modal ────────────────────────────────────────────────────────────────── */
 
 .modal-content {
   border-radius: 15px;
@@ -171,59 +287,10 @@ body {
   border-top: 1px solid var(--border-color);
 }
 
+/* ─── Utilitários ──────────────────────────────────────────────────────────── */
+
 .text-muted {
   color: var(--text-muted) !important;
-}
-
-/* Estilos específicos para o tema escuro */
-body[data-theme="dark"] .card-header.bg-primary {
-  background-color: #0d6efd !important;
-}
-
-body[data-theme="dark"] .btn-close {
-  filter: invert(1);
-}
-
-body[data-theme="dark"] .btn-outline-primary {
-  border-color: #3b81e8;
-  color: #3b81e8;
-}
-
-body[data-theme="dark"] .btn-outline-primary:hover {
-  background-color: #0d6efd;
-  color: white;
-}
-
-body[data-theme="dark"] .text-select-pdf {
-  color: white !important;
-}
-
-.form-switch .form-check-input {
-  width: 3em;
-  height: 1.5em;
-  cursor: pointer;
-}
-
-.form-check-label {
-  margin-left: 10px;
-}
-
-.form-switch {
-  display: flex;
-  flex-direction: row;
-  align-items: center; 
-  position: relative;
-}
-
-.form-check-input {
-  width: 3em;
-  height: 1.5em;
-  cursor: pointer;
-}
-
-.form-check-label {
-  margin-top: 3px;
-  text-align: center;
 }
 
 .swal2-popup {
@@ -247,7 +314,22 @@ body[data-theme="dark"] .text-select-pdf {
   user-select: none;
 }
 
-/* Mudança de Tema */
+/* ─── Tema escuro — ajustes específicos ────────────────────────────────────── */
+
+body[data-theme="dark"] .card-header.bg-primary {
+  background-color: #0d6efd !important;
+}
+
+body[data-theme="dark"] .btn-close {
+  filter: invert(1);
+}
+
+body[data-theme="dark"] .text-select-pdf {
+  color: white !important;
+}
+
+/* ─── Toggle de tema ───────────────────────────────────────────────────────── */
+
 .theme-toggle-wrapper {
   position: relative;
   display: inline-block;
@@ -319,7 +401,38 @@ body[data-theme="dark"] .text-select-pdf {
   background-color: #2d2d2d;
 }
 
-/* Ajustes responsivos para a mudança de tema */
+/* ─── Form switches ────────────────────────────────────────────────────────── */
+
+.form-switch .form-check-input {
+  width: 3em;
+  height: 1.5em;
+  cursor: pointer;
+}
+
+.form-check-label {
+  margin-left: 10px;
+}
+
+.form-switch {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  position: relative;
+}
+
+.form-check-input {
+  width: 3em;
+  height: 1.5em;
+  cursor: pointer;
+}
+
+.form-check-label {
+  margin-top: 3px;
+  text-align: center;
+}
+
+/* ─── Responsivo ───────────────────────────────────────────────────────────── */
+
 @media (max-width: 768px) {
   .card-header .d-flex {
     flex-wrap: wrap;
@@ -341,6 +454,10 @@ body[data-theme="dark"] .text-select-pdf {
   .card-header .fs-1 {
     font-size: 1.5rem !important;
   }
+
+  .file-name-text {
+    max-width: 180px;
+  }
 }
 
 @media (max-width: 576px) {
@@ -352,5 +469,10 @@ body[data-theme="dark"] .text-select-pdf {
   .theme-toggle-wrapper {
     align-self: flex-end;
     margin-top: 0.5rem;
+  }
+
+  .mode-tabs .nav-link {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
   }
 }

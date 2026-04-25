@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Unificador de PDF - Unifique seus PDFs</title>
+  <title>PDF Tools - Unificador e Conversor de PDF</title>
   <link rel="shortcut icon" href="assets/img/favicon.ico" type="image/x-icon">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -16,13 +16,15 @@
     <div class="row justify-content-center">
       <div class="col-lg-8 col-md-10">
         <div class="card shadow-lg">
+
+          <!-- Header dinâmico -->
           <div class="card-header bg-primary text-white">
             <div class="d-flex align-items-center justify-content-between">
               <div class="d-flex align-items-center">
                 <i id="pdfIcon" class="fas fa-file-pdf me-3 fs-1"></i>
                 <div>
-                  <h1 class="h3 mb-0">Unificador de PDF</h1>
-                  <p class="mb-0">Unifique múltiplos arquivos PDF em um único arquivo</p>
+                  <h1 id="headerTitle" class="h3 mb-0">Unificador de PDF</h1>
+                  <p id="headerSubtitle" class="mb-0">Unifique múltiplos arquivos PDF em um único arquivo</p>
                 </div>
               </div>
               <div class="theme-toggle-wrapper">
@@ -37,84 +39,158 @@
           </div>
 
           <div class="card-body p-4">
-            <div class="text-center mb-4">
-              <i class="fas fa-file-import fs-1 text-primary mb-3"></i>
-              <h2 class="h4 text-select-pdf">Selecione seus arquivos PDF</h2>
-              <p class="text-muted">Arraste e solte ou clique para selecionar</p>
-            </div>
 
-            <div class="dropzone p-4 mb-4 text-center border-2 border-dashed rounded" id="dropzone">
-              <input type="file" id="pdfInput" class="d-none" multiple accept=".pdf">
-              <label for="pdfInput" class="btn btn-primary btn-lg">
-                <i class="fas fa-folder-open me-2"></i>Selecionar Arquivos
-              </label>
-              <div class="mt-2" id="fileNames" class="sortable-list"></div>
-            </div>
+            <!-- Tabs de seleção de modo -->
+            <ul class="nav nav-tabs mode-tabs mb-4" role="tablist">
+              <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="merge-tab-btn"
+                        data-bs-toggle="tab" data-bs-target="#merge-tab"
+                        data-mode-tab="merge" type="button" role="tab"
+                        aria-controls="merge-tab" aria-selected="true">
+                  <i class="fas fa-file-contract me-2"></i>Unificar PDFs
+                </button>
+              </li>
+              <li class="nav-item" role="presentation">
+                <button class="nav-link" id="convert-tab-btn"
+                        data-bs-toggle="tab" data-bs-target="#convert-tab"
+                        data-mode-tab="convert" type="button" role="tab"
+                        aria-controls="convert-tab" aria-selected="false">
+                  <i class="fas fa-images me-2"></i>Imagens → PDF
+                </button>
+              </li>
+            </ul>
 
-            <div class="mb-3">
-              <label for="pdfName" class="form-label">Nome do PDF unificado (sem .pdf)</label>
-              <input type="text" class="form-control" id="pdfName" placeholder="Ex: documento_unificado">
-              <div class="form-text">O arquivo será salvo com a extensão .pdf automaticamente</div>
-            </div>
+            <div class="tab-content">
 
-            <div class="d-flex justify-content-between mb-3">
-              <button id="settingsBtn" class="btn btn-outline-primary d-none" data-bs-toggle="modal" data-bs-target="#settingsModal">
-                <i class="fas fa-cog me-2"></i>Configurações
-              </button>
-            </div>
-            
-            <div class="modal fade" id="settingsModal" tabindex="-1" aria-hidden="true">
-              <div class="modal-dialog">
-                <div class="modal-content">
-                  <div class="modal-header">
-                    <h5 class="modal-title">Configurações do PDF</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                  </div>
-                  <div class="modal-body">
-                    <div class="mb-3">
-                      <div class="form-check form-switch">
-                        <input class="form-check-input" type="checkbox" id="paginateToggle">
-                        <label class="form-check-label" for="paginateToggle">Adicionar numeração de páginas</label>
-                      </div>
+              <!-- ======================== -->
+              <!-- TAB: UNIFICAR PDFs       -->
+              <!-- ======================== -->
+              <div class="tab-pane fade show active" id="merge-tab" role="tabpanel" aria-labelledby="merge-tab-btn">
 
-                      <div class="form-check form-switch">
-                        <input class="form-check-input" type="checkbox" id="paginateFirstPage">
-                        <label class="form-check-label" for="paginateFirstPage">Adicionar numeração na primeira página</label>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
-                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Salvar</button>
+                <div class="text-center mb-4">
+                  <i class="fas fa-file-import fs-1 text-primary mb-3"></i>
+                  <h2 class="h4 text-select-pdf">Selecione seus arquivos PDF</h2>
+                  <p class="text-muted">Arraste e solte ou clique para selecionar múltiplos PDFs</p>
+                </div>
+
+                <div class="dropzone p-4 mb-4 text-center border-2 border-dashed rounded" id="dropzone">
+                  <input type="file" id="pdfInput" class="d-none" multiple accept=".pdf">
+                  <label for="pdfInput" class="btn btn-primary btn-lg">
+                    <i class="fas fa-folder-open me-2"></i>Selecionar Arquivos PDF
+                  </label>
+                  <div class="mt-2" id="fileNames"></div>
+                </div>
+
+                <div class="mb-3">
+                  <label for="pdfName" class="form-label">Nome do PDF unificado</label>
+                  <input type="text" class="form-control" id="pdfName" placeholder="Ex: documento_unificado">
+                  <div class="form-text">O arquivo será salvo com a extensão .pdf automaticamente</div>
+                </div>
+
+                <div class="d-flex justify-content-between mb-3">
+                  <button id="settingsBtn" class="btn btn-outline-primary d-none" data-bs-toggle="modal" data-bs-target="#settingsModal">
+                    <i class="fas fa-cog me-2"></i>Configurações
+                  </button>
+                </div>
+
+                <div class="d-grid">
+                  <button id="mergeBtn" class="btn btn-success btn-lg" onclick="mergePDFs()" disabled>
+                    <i class="fas fa-file-contract me-2"></i>Unificar PDFs
+                  </button>
+                </div>
+
+                <div class="mt-4">
+                  <div class="d-flex align-items-center text-muted">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <small>Seus arquivos não são enviados para nenhum servidor. Todo o processamento é feito no seu navegador.</small>
                   </div>
                 </div>
               </div>
-            </div>
 
-            <div class="d-grid">
-              <button id="mergeBtn" class="btn btn-success btn-lg" onclick="mergePDFs()">
-                <i class="fas fa-file-contract me-2"></i>Unificar PDFs
-              </button>
-            </div>
+              <!-- ======================== -->
+              <!-- TAB: IMAGENS → PDF       -->
+              <!-- ======================== -->
+              <div class="tab-pane fade" id="convert-tab" role="tabpanel" aria-labelledby="convert-tab-btn">
 
-            <div class="mt-4">
-              <div class="d-flex align-items-center text-muted">
-                <i class="fas fa-info-circle me-2"></i>
-                <small>Seus arquivos não são enviados para nenhum servidor. Todo o processamento é feito no seu navegador.</small>
+                <div class="text-center mb-4">
+                  <i class="fas fa-images fs-1 text-primary mb-3"></i>
+                  <h2 class="h4 text-select-pdf">Selecione suas imagens</h2>
+                  <p class="text-muted">Formatos aceitos: JPG, PNG e WEBP — cada imagem vira uma página do PDF</p>
+                </div>
+
+                <div class="dropzone p-4 mb-4 text-center border-2 border-dashed rounded" id="imageDropzone">
+                  <input type="file" id="imageInput" class="d-none" multiple accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp">
+                  <label for="imageInput" class="btn btn-primary btn-lg">
+                    <i class="fas fa-folder-open me-2"></i>Selecionar Imagens
+                  </label>
+                  <p class="text-muted mt-2 mb-0"><small>ou arraste e solte as imagens aqui</small></p>
+                  <div class="mt-2" id="imageFileNames"></div>
+                </div>
+
+                <div class="mb-3">
+                  <label for="convertPdfName" class="form-label">Nome do PDF gerado</label>
+                  <input type="text" class="form-control" id="convertPdfName" placeholder="Ex: minhas_imagens">
+                  <div class="form-text">O arquivo será salvo com a extensão .pdf automaticamente</div>
+                </div>
+
+                <div class="d-grid">
+                  <button id="convertBtn" class="btn btn-success btn-lg" onclick="convertImagesToPDF()" disabled>
+                    <i class="fas fa-file-image me-2"></i>Converter para PDF
+                  </button>
+                </div>
+
+                <div class="mt-4">
+                  <div class="d-flex align-items-center text-muted">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <small>Processamento 100% local. Nenhuma imagem é enviada para servidores externos.</small>
+                  </div>
+                </div>
               </div>
+
+            </div><!-- /tab-content -->
+          </div><!-- /card-body -->
+        </div><!-- /card -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de configurações (modo unificar) -->
+  <div class="modal fade" id="settingsModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Configurações do PDF</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="paginateToggle">
+              <label class="form-check-label" for="paginateToggle">Adicionar numeração de páginas</label>
+            </div>
+            <div class="form-check form-switch mt-2">
+              <input class="form-check-input" type="checkbox" id="paginateFirstPage">
+              <label class="form-check-label" for="paginateFirstPage">Adicionar numeração na primeira página</label>
             </div>
           </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+          <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Salvar</button>
         </div>
       </div>
     </div>
   </div>
 
+  <!-- Scripts externos -->
   <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/fontkit@1.8.1/dist/fontkit.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
   <script src="https://unpkg.com/downloadjs@^1.4.7"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <!-- Scripts da aplicação -->
   <script src="assets/js/ui/themeManager.js"></script>
   <script src="assets/js/ui/hideConfiguration.js"></script>
   <script type="module" src="assets/js/core/main.js"></script>
