@@ -35,10 +35,10 @@ export function initPagination() {
     return;
   }
 
-  paginateToggle.checked = true;
-  paginateFirstPage.checked = true;
-  customDateToggle.checked = true;
-  customDateFirstPage.checked = true;
+  paginateToggle.checked = false;
+  paginateFirstPage.checked = false;
+  customDateToggle.checked = false;
+  customDateFirstPage.checked = false;
   customDateInput.value = getTodayInputValue();
 
   const syncPaginateState = () => {
