@@ -246,6 +246,26 @@ body.loading-locked {
   background-color: rgba(13, 110, 253, 1);
 }
 
+.organizer-remove-btn {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  background-color: rgba(220, 53, 69, 0.92);
+  color: #ffffff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+}
+
+.organizer-remove-btn:hover {
+  background-color: rgba(220, 53, 69, 1);
+}
+
 .organizer-thumb-image {
   max-width: 100%;
   max-height: 240px;
@@ -265,7 +285,8 @@ body.loading-locked {
 .organizer-order-badge,
 .organizer-page-source,
 .organizer-page-index,
-.organizer-expand-btn {
+.organizer-expand-btn,
+.organizer-remove-btn {
   -webkit-user-select: none;
   -ms-user-select: none;
   user-select: none;

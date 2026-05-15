@@ -18,8 +18,12 @@ export function initPageOrganizer(organizeBtn, modalElement, organizerGrid, appl
   const previewCache = new Map();
   const documentCache = new Map();
   let workingPages = [];
-  let initialOrderIds = [];
+  let initialPagesSnapshot = [];
   let previewPageId = null;
+
+  function updateApplyState() {
+    applyBtn.disabled = workingPages.length === 0;
+  }
 
   if (window.Sortable) {
     new window.Sortable(organizerGrid, {
@@ -56,8 +60,9 @@ export function initPageOrganizer(organizeBtn, modalElement, organizerGrid, appl
 
     try {
       workingPages = handlers.getOrganizerPages().map(page => ({ ...page }));
-      initialOrderIds = workingPages.map(page => page.id);
+      initialPagesSnapshot = workingPages.map(page => ({ ...page }));
       await renderGrid(organizerGrid, workingPages, thumbnailCache, documentCache);
+      updateApplyState();
       bootstrapModal.show();
     } catch (error) {
       console.error('Erro ao abrir organizador de paginas:', error);
@@ -73,16 +78,45 @@ export function initPageOrganizer(organizeBtn, modalElement, organizerGrid, appl
   });
 
   resetBtn.addEventListener('click', async () => {
-    if (initialOrderIds.length === 0 || workingPages.length === 0) {
+    if (initialPagesSnapshot.length === 0) {
       return;
     }
 
-    const pageMap = new Map(workingPages.map(page => [page.id, page]));
-    workingPages = initialOrderIds.map(id => pageMap.get(id)).filter(Boolean);
+    workingPages = initialPagesSnapshot.map(page => ({ ...page }));
     await renderGrid(organizerGrid, workingPages, thumbnailCache, documentCache);
+    updateApplyState();
   });
 
   organizerGrid.addEventListener('click', async (event) => {
+    const removeBtn = event.target.closest('.organizer-remove-btn');
+    if (removeBtn) {
+      const pageId = Number.parseInt(removeBtn.dataset.id, 10);
+      const pageIndex = workingPages.findIndex(page => page.id === pageId);
+
+      if (pageIndex < 0) {
+        return;
+      }
+
+      const [removedPage] = workingPages.splice(pageIndex, 1);
+
+      if (previewPageId === removedPage.id) {
+        previewModal.hide();
+      }
+
+      await renderGrid(organizerGrid, workingPages, thumbnailCache, documentCache);
+      updateApplyState();
+
+      if (workingPages.length === 0) {
+        showThemedSwal({
+          icon: 'info',
+          title: 'Sem paginas selecionadas',
+          text: 'Remocao concluida. Adicione novas paginas ou clique em Redefinir para continuar.'
+        });
+      }
+
+      return;
+    }
+
     const expandBtn = event.target.closest('.organizer-expand-btn');
     if (!expandBtn) {
       return;
@@ -93,6 +127,15 @@ export function initPageOrganizer(organizeBtn, modalElement, organizerGrid, appl
   });
 
   applyBtn.addEventListener('click', () => {
+    if (workingPages.length === 0) {
+      showThemedSwal({
+        icon: 'warning',
+        title: 'Nenhuma pagina para aplicar',
+        text: 'Mantenha ao menos uma pagina ou clique em Redefinir.'
+      });
+      return;
+    }
+
     const orderedIds = workingPages.map(page => page.id);
     handlers.applyPageOrder(orderedIds);
     bootstrapModal.hide();
@@ -100,8 +143,9 @@ export function initPageOrganizer(organizeBtn, modalElement, organizerGrid, appl
 
   modalElement.addEventListener('hidden.bs.modal', () => {
     workingPages = [];
-    initialOrderIds = [];
+    initialPagesSnapshot = [];
     previewPageId = null;
+    updateApplyState();
     organizerGrid.innerHTML = '';
   });
 
@@ -224,6 +268,14 @@ async function renderGrid(container, pages, thumbnailCache, documentCache) {
     expandBtn.innerHTML = '<i class="fas fa-expand"></i>';
     expandBtn.setAttribute('aria-label', 'Abrir visualizacao ampliada');
     thumb.appendChild(expandBtn);
+
+    const removeBtn = document.createElement('button');
+    removeBtn.type = 'button';
+    removeBtn.className = 'organizer-remove-btn';
+    removeBtn.dataset.id = String(page.id);
+    removeBtn.innerHTML = '<i class="fas fa-trash-alt"></i>';
+    removeBtn.setAttribute('aria-label', 'Remover pagina da selecao');
+    thumb.appendChild(removeBtn);
 
     const img = document.createElement('img');
     img.alt = `${page.fileLabel} - pagina ${page.sourcePageIndex + 1}`;
