@@ -2,6 +2,14 @@ const ACCEPTED_PDF_TYPES = ['application/pdf'];
 
 export function initFileManagement(pdfInput, fileNames, mergeBtn) {
   let filesArray = [];
+  let pagesArray = [];
+  let pageIdCounter = 0;
+  const organizePagesBtn = document.getElementById('organizePagesBtn');
+
+  function buildFileLabel(file, index) {
+    const fallback = `Documento ${index + 1}`;
+    return (file && file.name) ? file.name : fallback;
+  }
 
   function updateFileNames() {
     fileNames.innerHTML = '';
@@ -28,11 +36,20 @@ export function initFileManagement(pdfInput, fileNames, mergeBtn) {
       });
     });
 
-    mergeBtn.disabled = filesArray.length === 0;
+    mergeBtn.disabled = pagesArray.length === 0;
+    organizePagesBtn.disabled = pagesArray.length === 0;
   }
 
   function removeFile(index) {
+    const removedFile = filesArray[index];
     filesArray.splice(index, 1);
+    pagesArray = pagesArray
+      .filter(page => page.fileRef !== removedFile)
+      .map(page => ({
+        ...page,
+        sourceFileIndex: filesArray.indexOf(page.fileRef)
+      }));
+
     syncFileInput();
     updateFileNames();
   }
@@ -66,18 +83,46 @@ export function initFileManagement(pdfInput, fileNames, mergeBtn) {
       return;
     }
 
-    filesArray.push(...validFiles);
+    addValidFiles(validFiles);
+  }
+
+  async function addValidFiles(validFiles) {
+    for (const file of validFiles) {
+      const sourceFileIndex = filesArray.length;
+      filesArray.push(file);
+
+      try {
+        const arrayBuffer = await file.arrayBuffer();
+        const pdfDoc = await PDFLib.PDFDocument.load(arrayBuffer);
+        const pageCount = pdfDoc.getPageCount();
+        const fileLabel = buildFileLabel(file, sourceFileIndex);
+
+        for (let sourcePageIndex = 0; sourcePageIndex < pageCount; sourcePageIndex++) {
+          pagesArray.push({
+            id: pageIdCounter++,
+            sourceFileIndex,
+            sourcePageIndex,
+            fileLabel,
+            fileRef: file
+          });
+        }
+      } catch (error) {
+        filesArray.pop();
+        console.error('Erro ao carregar PDF:', error);
+        showThemedSwal({
+          icon: 'error',
+          title: 'PDF invalido',
+          text: `Nao foi possivel ler o arquivo ${file.name}.`
+        });
+      }
+    }
+
     syncFileInput();
     updateFileNames();
   }
 
   function isValidPdf(file) {
     return ACCEPTED_PDF_TYPES.includes(file.type) || file.name.toLowerCase().endsWith('.pdf');
-  }
-
-  function handleDrop(e) {
-    const dt = e.dataTransfer;
-    addFiles(dt.files);
   }
 
   pdfInput.addEventListener('change', (e) => {
@@ -93,6 +138,10 @@ export function initFileManagement(pdfInput, fileNames, mergeBtn) {
         const movedItem = filesArray[evt.oldIndex];
         filesArray.splice(evt.oldIndex, 1);
         filesArray.splice(evt.newIndex, 0, movedItem);
+        pagesArray = pagesArray.map(page => ({
+          ...page,
+          sourceFileIndex: filesArray.indexOf(page.fileRef)
+        }));
         syncFileInput();
         updateFileNames();
       }
@@ -102,8 +151,16 @@ export function initFileManagement(pdfInput, fileNames, mergeBtn) {
   }
 
   mergeBtn.disabled = true;
+  organizePagesBtn.disabled = true;
 
   return {
-    getFiles: () => filesArray
+    getFiles: () => filesArray,
+    getPages: () => pagesArray.map(({ sourceFileIndex, sourcePageIndex, fileLabel }) => ({ sourceFileIndex, sourcePageIndex, fileLabel })),
+    getOrganizerPages: () => pagesArray.map(page => ({ ...page })),
+    applyPageOrder: (orderedIds) => {
+      const orderMap = new Map(pagesArray.map(page => [page.id, page]));
+      pagesArray = orderedIds.map(id => orderMap.get(id)).filter(Boolean);
+      updateFileNames();
+    }
   };
 }

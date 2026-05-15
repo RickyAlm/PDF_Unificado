@@ -2,9 +2,10 @@ import { addCustomDate, addPageNumbers, getProcessingSettings, loadOverlayFont }
 import { validateFileName, formatFileName } from '../utils/index.js';
 import { previewPDF } from './pdfViewer.js';
 
-export function initPDFMerger(getFiles, mergeBtn) {
+export function initPDFMerger(getFiles, getPages, mergeBtn) {
   window.mergePDFs = async function() {
     const inputFiles = getFiles();
+    const selectedPages = getPages();
     const pdfNameInput = document.getElementById('pdfName');
     const settings = getProcessingSettings();
 
@@ -15,7 +16,7 @@ export function initPDFMerger(getFiles, mergeBtn) {
 
     const pdfName = formatFileName(pdfNameInput.value.trim());
 
-    if (inputFiles.length < 1) {
+    if (inputFiles.length < 1 || selectedPages.length < 1) {
       showNoFilesAlert();
       return;
     }
@@ -25,6 +26,7 @@ export function initPDFMerger(getFiles, mergeBtn) {
 
       const { mergedPdfBytes, totalPages } = await processPDFs(
         inputFiles,
+        selectedPages,
         settings
       );
 
@@ -34,50 +36,49 @@ export function initPDFMerger(getFiles, mergeBtn) {
     }
   };
 
-  async function processPDFs(files, settings) {
+  async function processPDFs(files, selectedPages, settings) {
     const mergedPdf = await PDFLib.PDFDocument.create();
     let currentPageNumber = 0;
-    let totalPages = 0;
+    const totalPages = selectedPages.length;
+    const sourceDocCache = new Map();
 
     const font = await loadOverlayFont(mergedPdf);
 
-    for (let i = 0; i < files.length; i++) {
-      const file = files[i];
-      const arrayBuffer = await file.arrayBuffer();
-      const pdfDoc = await PDFLib.PDFDocument.load(arrayBuffer);
-      const pages = await mergedPdf.copyPages(pdfDoc, pdfDoc.getPageIndices());
+    for (const pageRef of selectedPages) {
+      const { sourceFileIndex, sourcePageIndex } = pageRef;
+      const sourceFile = files[sourceFileIndex];
 
-      if (i === 0) {
-        totalPages = await calculateTotalPages(files, pages.length);
+      if (!sourceFile) {
+        continue;
       }
 
-      for (const [index, page] of pages.entries()) {
-        currentPageNumber++;
-        const newPage = mergedPdf.addPage(page);
+      if (!sourceDocCache.has(sourceFileIndex)) {
+        const arrayBuffer = await sourceFile.arrayBuffer();
+        const pdfDoc = await PDFLib.PDFDocument.load(arrayBuffer);
+        sourceDocCache.set(sourceFileIndex, pdfDoc);
+      }
 
-        if (settings.shouldPaginate) {
-          addPageNumbers(newPage, currentPageNumber, totalPages, settings.shouldPaginateFirstPage, font);
-        }
+      const sourceDoc = sourceDocCache.get(sourceFileIndex);
+      const copiedPages = await mergedPdf.copyPages(sourceDoc, [sourcePageIndex]);
 
-        if (settings.shouldApplyCustomDate && (settings.shouldApplyCustomDateFirstPage || currentPageNumber > 1)) {
-          addCustomDate(newPage, settings.customDate, font);
-        }
+      if (copiedPages.length === 0) {
+        continue;
+      }
+
+      currentPageNumber++;
+      const newPage = mergedPdf.addPage(copiedPages[0]);
+
+      if (settings.shouldPaginate) {
+        addPageNumbers(newPage, currentPageNumber, totalPages, settings.shouldPaginateFirstPage, font);
+      }
+
+      if (settings.shouldApplyCustomDate && (settings.shouldApplyCustomDateFirstPage || currentPageNumber > 1)) {
+        addCustomDate(newPage, settings.customDate, font);
       }
     }
 
     const mergedPdfBytes = await mergedPdf.save();
     return { mergedPdfBytes, totalPages };
-  }
-
-  async function calculateTotalPages(files, firstFilePages) {
-    let total = firstFilePages;
-    for (let j = 1; j < files.length; j++) {
-      const tempFile = files[j];
-      const tempArrayBuffer = await tempFile.arrayBuffer();
-      const tempPdfDoc = await PDFLib.PDFDocument.load(tempArrayBuffer);
-      total += tempPdfDoc.getPageCount();
-    }
-    return total;
   }
 
   function showInvalidNameAlert() {

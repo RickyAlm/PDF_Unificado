@@ -4,6 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>PDF Tools - Unificador e Conversor de PDF</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Sora:wght@500;600;700;800&display=swap" rel="stylesheet">
   <link rel="shortcut icon" href="assets/img/favicon.ico" type="image/x-icon">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -11,14 +14,14 @@
   <link rel="stylesheet" href="assets/css/style.css">
 </head>
 
-<body>
-  <div class="container py-5">
+<body class="app-shell">
+  <div class="container py-5 app-container">
     <div class="row justify-content-center">
       <div class="col-lg-8 col-md-10">
-        <div class="card shadow-lg">
+        <div class="card shadow-lg app-card">
 
           <!-- Header dinâmico -->
-          <div class="card-header bg-primary text-white">
+          <div class="card-header bg-primary text-white app-header">
             <div class="d-flex align-items-center justify-content-between">
               <div class="d-flex align-items-center">
                 <i id="pdfIcon" class="fas fa-file-pdf me-3 fs-1"></i>
@@ -78,7 +81,7 @@
                   <label for="pdfInput" class="btn btn-primary btn-lg">
                     <i class="fas fa-folder-open me-2"></i>Selecionar Arquivos PDF
                   </label>
-                  <div class="mt-2" id="fileNames"></div>
+                  <div class="mt-3" id="fileNames"></div>
                 </div>
 
                 <div class="mb-3">
@@ -94,6 +97,9 @@
                 </div>
 
                 <div class="d-grid">
+                  <button id="organizePagesBtn" type="button" class="btn btn-outline-primary btn-lg mb-2" disabled>
+                    <i class="fas fa-table-cells-large me-2"></i>Organizar paginas
+                  </button>
                   <button id="mergeBtn" class="btn btn-success btn-lg" onclick="mergePDFs()" disabled>
                     <i class="fas fa-file-contract me-2"></i>Unificar PDFs
                   </button>
@@ -157,6 +163,55 @@
           </div><!-- /card-body -->
         </div><!-- /card -->
       </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="pageOrganizerModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+      <div class="modal-content organizer-modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Organizar páginas</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body organizer-modal-body">
+          <p class="text-muted mb-3">Arraste as páginas para definir a ordem final do PDF.</p>
+          <div id="organizerGrid" class="organizer-grid"></div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="button" id="resetPageOrderBtn" class="btn btn-danger">Redefinir ordem</button>
+          <button type="button" id="applyPageOrderBtn" class="btn btn-primary">Aplicar ordem</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="pagePreviewModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content page-preview-modal-content">
+        <div class="modal-header page-preview-modal-header">
+          <h5 class="modal-title" id="pagePreviewTitle">Visualizacao da pagina</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body page-preview-modal-body">
+          <img id="pagePreviewImage" class="page-preview-image" alt="Pagina ampliada">
+        </div>
+        <div class="modal-footer page-preview-modal-footer">
+          <button type="button" id="pagePreviewPrevBtn" class="btn btn-outline-light">
+            <i class="fas fa-chevron-left me-2"></i>Anterior
+          </button>
+          <button type="button" id="pagePreviewNextBtn" class="btn btn-outline-light">
+            Proxima<i class="fas fa-chevron-right ms-2"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="globalLoadingOverlay" class="global-loading-overlay d-none" aria-hidden="true">
+    <div class="global-loading-box">
+      <div class="spinner-border text-light" role="status" aria-hidden="true"></div>
+      <p class="mb-0 mt-3">Carregando organizador...</p>
     </div>
   </div>
 

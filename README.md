@@ -1,171 +1,120 @@
-# Unificador de PDF
-Aplicação web para unificação de múltiplos arquivos PDF em um único documento, com recursos avançados de personalização e numeração de páginas.
+# PDF Tools
 
-## 🌐 Acesso Online
-A aplicação está disponível online e pode ser acessada diretamente através do link:
+Aplicacao web para:
 
-🔗 **https://rickyalm.github.io/PDF_Unificado/**
+- Unificar multiplos PDFs em um unico arquivo
+- Converter imagens (JPG, PNG e WEBP) em PDF
 
-> Não é necessário instalar nada! Basta acessar o link e começar a usar imediatamente.
+Tudo roda no navegador, sem upload para servidor.
 
-## 📋 Descrição do Projeto
+## Acesso Online
 
-Sistema completo para merge de arquivos PDF que permite:
-- Seleção de múltiplos arquivos PDF via interface ou drag-and-drop
-- Reordenação de arquivos através de arrastar e soltar
-- Remoção individual de arquivos da lista
-- Personalização do nome do arquivo final
-- Adição opcional de numeração de páginas
-- Controle de numeração na primeira página
-- Pré-visualização do PDF unificado
-- Alternância entre tema claro e escuro
-- Processamento 100% client-side (sem upload para servidores)
+Use diretamente em:
 
-## 🎯 Funcionalidades Principais
+https://rickyalm.github.io/PDF_Unificado/
 
-### Gerenciamento de Arquivos
-- Upload múltiplo de arquivos PDF
-- Drag-and-drop de arquivos
-- Reordenação visual dos documentos
-- Remoção individual de arquivos
+## Funcionalidades
 
-### Configurações Avançadas
-- Numeração automática de páginas
-- Opção de incluir/excluir numeração na primeira página
-- Personalização do nome do arquivo final
-- Fonte customizável para numeração (Century Gothic)
+### Modo 1: Unificar PDFs
+
+- Seleciona varios PDFs por botao ou arrastar e soltar
+- Permite reordenar os arquivos por drag-and-drop
+- Permite visualizar todas as paginas dos PDFs carregados
+- Permite reordenar as paginas livremente por drag-and-drop
+- Permite remover paginas individuais antes da unificacao
+- Permite remover itens individualmente
+- Gera arquivo final com nome personalizado
+- Permite visualizar o PDF gerado antes de baixar
+
+### Modo 2: Imagens -> PDF
+
+- Aceita arquivos JPG, JPEG, PNG e WEBP
+- Suporta selecao por botao e drag-and-drop
+- Permite reordenar imagens antes da conversao
+- Permite remover itens individualmente
+- Converte para PDF com uma imagem por pagina
+- Permite visualizar o PDF gerado antes de baixar
 
 ### Interface
-- Design responsivo e moderno
-- Tema claro/escuro com persistência
-- Feedback visual durante processamento
-- Ícone secreto para acesso às configurações (5 cliques no ícone PDF)
 
-## 🛠 Tecnologias Utilizadas
+- Tema claro/escuro com persistencia
+- Layout responsivo (desktop e mobile)
+- Feedback visual de processamento com modais
 
-[![My Skills](https://skillicons.dev/icons?i=html,css,js,bootstrap)](https://skillicons.dev)
+## Tecnologias
 
-- **Frontend**: HTML5, CSS3, JavaScript (ES6 Modules)
-- **Framework CSS**: Bootstrap 5.3.0
-- **Bibliotecas JavaScript**:
-  - [pdf-lib](https://pdf-lib.js.org/) - Manipulação de PDFs
-  - [SortableJS](https://sortablejs.github.io/Sortable/) - Drag-and-drop
-  - [SweetAlert2](https://sweetalert2.github.io/) - Alertas personalizados
-  - [download.js](http://danml.com/download.html) - Download de arquivos
-  - [fontkit](https://github.com/foliojs/fontkit) - Renderização de fontes
-- **Ícones**: Font Awesome 6.4.0
-- **Fontes**: Century Gothic, Poppins
+- HTML5, CSS3, JavaScript (ES Modules)
+- Bootstrap 5
+- pdf-lib
+- SortableJS
+- SweetAlert2
+- download.js
+- Font Awesome
 
-## 📂 Estrutura do Projeto
+## Estrutura do Projeto
 
 ```
-├── src/
-│   ├── index.html
-│   └── assets/
-│       ├── css/
-│       │   └── style.css
-│       ├── fonts/
-│       │   ├── CenturyGothic/
-│       │   │   ├── centurygothic_bold.ttf
-│       │   │   ├── centurygothic.ttf
-│       │   │   └── COPYRIGHT.txt
-│       │   └── Poppins/
-│       │       ├── OFL.txt
-│       │       ├── Poppins-Regular.ttf
-│       │       ├── Poppins-Bold.ttf
-│       │       └── Poppins-Medium.ttf
-│       ├── img/
-│       │   └── favicon.ico
-│       └── js/
-│           ├── core/
-│           │   └── main.js               # Inicialização da aplicação
-│           ├── pdf/
-│           │   ├── pdfMerger.js          # Processamento e merge dos PDFs
-│           │   └── pdfViewer.js          # Visualização de PDFs
-│           ├── ui/
-│           │   ├── dragAndDrop.js        # Gerenciamento de drag-and-drop
-│           │   ├── fileManagement.js     # Controle da lista de arquivos
-│           │   ├── hideConfiguration.js  # Easter egg das configurações (ignorar)
-│           │   ├── pagination.js         # Lógica de numeração de páginas
-│           │   └── themeManager.js       # Gerenciamento de temas
-│           └── utils/
-│               └── index.js              # Funções utilitárias
-├── .gitignore
+.
 ├── LICENSE
-└── README.md
+├── README.md
+└── src
+    ├── index.html
+    └── assets
+        ├── css
+        │   └── style.css
+        ├── fonts
+        │   ├── CenturyGothic
+        │   │   └── COPYRIGHT.txt
+        │   └── Poppins
+        │       └── OFL.txt
+        ├── img
+        └── js
+            ├── core
+            │   └── main.js
+            ├── image
+            │   └── imageToPdf.js
+            ├── pdf
+            │   ├── pdfMerger.js
+            │   └── pdfViewer.js
+            ├── ui
+            │   ├── dragAndDrop.js
+            │   ├── fileManagement.js
+            │   ├── imageManagement.js
+            │   ├── modeSelector.js
+            │   └── themeManager.js
+            └── utils
+                └── index.js
 ```
 
-## 🚀 Como Utilizar
+## Como Usar Localmente
 
-### Instalação Local
+1. Clone o repositorio:
 
-1. Clone o repositório:
-   ```bash
-   git clone https://github.com/RickyAlm/PDF_Unificado.git
-   ```
+```bash
+git clone https://github.com/RickyAlm/PDF_Unificado.git
+```
 
-2. Abra o arquivo index.html em um navegador moderno
+2. Abra src/index.html em um navegador moderno.
 
-3. Não é necessário servidor web ou instalação de dependências
+Nao precisa instalar dependencias nem subir servidor.
 
-### Uso da Aplicação
+## Privacidade
 
-1. **Adicionar Arquivos**:
-   - Clique em "Selecionar Arquivos" ou arraste os PDFs para a área de drop
-   
-2. **Organizar Documentos**:
-   - Arraste e solte os arquivos para reordená-los
-   - Clique no ícone de lixeira para remover arquivos indesejados
+- Processamento local no navegador
+- Nenhum arquivo enviado para servicos externos
 
-3. **Unificar**:
-   - Digite um nome para o arquivo final
-   - Clique em "Unificar PDFs"
-   - Visualize o resultado ou faça o download
+## Observacoes
 
-## 🎨 Recursos de Interface
+- Requer navegador moderno com suporte a ES Modules
+- Arquivos grandes podem consumir bastante memoria do navegador
 
-### Tema Claro/Escuro
-- Alternância via toggle no cabeçalho
-- Preferência salva no localStorage
-- Detecção automática de preferência do sistema
-- Alertas e modais adaptados ao tema
+## Licenca
 
-### Responsividade
-- Design adaptável para diferentes tamanhos de tela
-- Otimizado para desktop, tablet e mobile
+Projeto licenciado sob MIT.
 
-## 🔒 Privacidade e Segurança
+- Century Gothic: ver arquivo de copyright em src/assets/fonts/CenturyGothic
+- Poppins: SIL Open Font License 1.1 em src/assets/fonts/Poppins
 
-- **Processamento 100% local**: Nenhum arquivo é enviado para servidores externos
-- **Sem rastreamento**: Aplicação não coleta dados do usuário
-- **Execução client-side**: Todo o processamento ocorre no navegador
+## Contribuicoes
 
-## 📌 Observações
-
-- A aplicação requer um navegador moderno com suporte a ES6 Modules
-- Todos os arquivos são processados na memória do navegador
-- Recomendado para arquivos de tamanho moderado (depende da memória disponível)
-- As fontes Century Gothic e Poppins são licenciadas conforme seus respectivos arquivos de licença
-
-## 📄 Licenças
-
-Este projeto está sob a licença **MIT**. <br>
-Uso livre para fins de **estudo e aprendizado**.
-
-- **Century Gothic**: © The Monotype Corporation plc (ver COPYRIGHT.txt)
-- **Poppins**: SIL Open Font License 1.1 (ver OFL.txt)
-
-## 🤝 Contribuições
-
-Contribuições são bem-vindas! Sinta-se à vontade para:
-- Reportar bugs
-- Sugerir novas funcionalidades
-- Enviar pull requests
-
----
-
-**Desenvolvido por:** Henrique Almeida <br>
-**Repositório:** [github.com/RickyAlm/PDF_Unificado](github.com/RickyAlm/PDF_Unificado) <br>
-**Demo Online:** [rickyalm.github.io/PDF_Unificado](rickyalm.github.io/PDF_Unificado)
-
----
+Pull requests e sugestoes sao bem-vindos.
