@@ -5,6 +5,7 @@ import { initPDFMerger } from '../pdf/pdfMerger.js';
 import { initModeSelector } from '../ui/modeSelector.js';
 import { initImageConverter } from '../image/imageToPdf.js';
 import { initPageOrganizer } from '../ui/pageOrganizer.js';
+import { initPdfOcr } from '../pdf/pdfOcr.js';
 
 (() => {
   // ─── Modo: Unificar PDFs ────────────────────────────────────────────────
@@ -33,6 +34,13 @@ import { initPageOrganizer } from '../ui/pageOrganizer.js';
   const convertBtn      = document.getElementById('convertBtn');
 
   initImageConverter(imageInput, imageFileNames, convertBtn);
+
+  // ─── Modo: OCR em PDFs ──────────────────────────────────────────────────
+  const ocrInput     = document.getElementById('ocrInput');
+  const ocrFileNames = document.getElementById('ocrFileNames');
+  const ocrBtn       = document.getElementById('ocrBtn');
+
+  initPdfOcr(ocrInput, ocrFileNames, ocrBtn);
 
   // ─── Navegação entre modos ──────────────────────────────────────────────
   initModeSelector();

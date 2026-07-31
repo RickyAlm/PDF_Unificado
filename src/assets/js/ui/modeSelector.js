@@ -14,6 +14,11 @@ const MODE_CONFIG = {
     iconClass: 'fas fa-images me-3 fs-1',
     title: 'Conversor de Imagens',
     subtitle: 'Converta imagens JPG, PNG e WEBP para PDF'
+  },
+  ocr: {
+    iconClass: 'fas fa-font me-3 fs-1',
+    title: 'OCR em PDFs',
+    subtitle: 'Adicione uma camada de texto pesquisável aos seus PDFs'
   }
 };
 
