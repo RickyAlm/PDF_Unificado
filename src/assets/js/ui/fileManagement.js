@@ -138,10 +138,11 @@ export function initFileManagement(pdfInput, fileNames, mergeBtn) {
         const movedItem = filesArray[evt.oldIndex];
         filesArray.splice(evt.oldIndex, 1);
         filesArray.splice(evt.newIndex, 0, movedItem);
-        pagesArray = pagesArray.map(page => ({
-          ...page,
-          sourceFileIndex: filesArray.indexOf(page.fileRef)
-        }));
+        pagesArray = filesArray.flatMap((file, fileIndex) =>
+          pagesArray
+            .filter(page => page.fileRef === file)
+            .map(page => ({ ...page, sourceFileIndex: fileIndex }))
+        );
         syncFileInput();
         updateFileNames();
       }

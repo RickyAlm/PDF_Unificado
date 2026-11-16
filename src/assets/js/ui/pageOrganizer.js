@@ -194,7 +194,7 @@ export function initPageOrganizer(organizeBtn, modalElement, organizerGrid, appl
     previewPrevBtn.disabled = pageIndex === 0;
     previewNextBtn.disabled = pageIndex === workingPages.length - 1;
 
-    const cacheKey = `${page.sourceFileIndex}::${page.sourcePageIndex}`;
+    const cacheKey = page.id;
     if (previewCache.has(cacheKey)) {
       previewImage.src = previewCache.get(cacheKey);
       previewModal.show();
@@ -296,7 +296,7 @@ async function renderGrid(container, pages, thumbnailCache, documentCache) {
     container.appendChild(card);
 
     try {
-      const cacheKey = `${page.sourceFileIndex}::${page.sourcePageIndex}`;
+      const cacheKey = page.id;
       if (thumbnailCache.has(cacheKey)) {
         img.src = thumbnailCache.get(cacheKey);
         continue;
