@@ -15,7 +15,14 @@
 import { initImageManagement } from '../ui/imageManagement.js';
 import { validateFileName, formatFileName } from '../utils/index.js';
 import { previewPDF } from '../pdf/pdfViewer.js';
-import { addCustomDate, getProcessingSettings, loadOverlayFont } from '../ui/pagination.js';
+import {
+  addCustomDate,
+  addPersonalCustomDate,
+  getProcessingSettings,
+  loadOverlayFont,
+  loadPersonalFont,
+  OVERLAY_STYLES
+} from '../ui/pagination.js';
 
 export function initImageConverter(imageInput, imageFileNames, convertBtn) {
   // Inicializa o gerenciador de lista e obtém acesso ao array interno
@@ -61,9 +68,11 @@ export function initImageConverter(imageInput, imageFileNames, convertBtn) {
 
   async function buildPdfFromImages(images, settings) {
     const pdfDoc = await PDFLib.PDFDocument.create();
+    const usePersonalDate = settings.overlayStyle === OVERLAY_STYLES.PERSONAL;
     const font = settings.shouldApplyCustomDate
-      ? await loadOverlayFont(pdfDoc)
+      ? await (usePersonalDate ? loadPersonalFont(pdfDoc) : loadOverlayFont(pdfDoc))
       : null;
+    const drawDate = usePersonalDate ? addPersonalCustomDate : addCustomDate;
 
     for (const [index, file] of images.entries()) {
       const { jpegBytes, width, height } = await normalizeToJpeg(file);
@@ -80,7 +89,7 @@ export function initImageConverter(imageInput, imageFileNames, convertBtn) {
       });
 
       if (settings.shouldApplyCustomDate && font && (settings.shouldApplyCustomDateFirstPage || index > 0)) {
-        addCustomDate(page, settings.customDate, font);
+        drawDate(page, settings.customDate, font);
       }
     }
 

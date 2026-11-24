@@ -10,6 +10,41 @@ const PAGE_NUMBER_LAYOUT = {
   totalDoubleDigit: { x: 0.968082, y: 0.914478, size: 36 }
 };
 
+// Modelo "Pessoal". Frações medidas em "Prancha para teste.pdf" (A3 1190.55 x 841.89, origem embaixo à esquerda).
+const PERSONAL_COLORS = {
+  text: PDFLib.rgb(0x66 / 255, 0x5a / 255, 0x46 / 255),
+  // #d4cdc5: tom em que o fundo do modelo é renderizado (#d4cdc2 deixava uma borda visível)
+  background: PDFLib.rgb(0xd4 / 255, 0xcd / 255, 0xc5 / 255)
+};
+
+// Número no quadro "PRANCHA:" (canto inferior direito), centralizado pela tinta do "PRANCHA:" (x ≈ 1099.2)
+const PERSONAL_PAGE_NUMBER_LAYOUT = {
+  textCenterX: 0.923290,
+  textBaselineY: 0.034600,
+  size: 26,
+  // Espaço extra de cada lado da barra ("17" + 3.3pt + "/" + 3.3pt + "25"), medido no modelo
+  separatorGap: 3.3,
+  cover: { x: 0.886200, y: 0.023800, width: 0.071400, height: 0.042200 }
+};
+
+// Data no rodapé: "... | 24/11/2026 | Folha A3 | ...", alinhada à esquerda no início da 2ª linha
+const PERSONAL_DATE_LAYOUT = {
+  textX: 0.268066,
+  textBaselineY: 0.039941,
+  size: 11,
+  cover: { x: 0.267120, y: 0.035634, width: 0.050985, height: 0.018637 }
+};
+
+export const OVERLAY_STYLES = {
+  DUAL: 'dual',
+  PERSONAL: 'pessoal'
+};
+
+const FONT_PATHS = {
+  centuryGothic: '../../fonts/CenturyGothic/centurygothic.ttf',
+  openSansRegular: '../../fonts/OpenSans/OpenSans-Regular.ttf'
+};
+
 const DATE_OVERLAY_LAYOUT = {
   x: 0.947500,
   y: 0.764000,
@@ -30,10 +65,15 @@ export function initPagination() {
   const customDateFirstPage = document.getElementById('customDateFirstPage');
   const customDateInput = document.getElementById('customDateInput');
   const customDateFieldWrapper = document.getElementById('customDateFieldWrapper');
+  const overlayStyleToggle = document.getElementById('overlayStyleToggle');
+  const overlayStyleWrapper = document.getElementById('overlayStyleWrapper');
 
-  if (!paginateToggle || !paginateFirstPage || !customDateToggle || !customDateFirstPage || !customDateInput || !customDateFieldWrapper) {
+  if (!paginateToggle || !paginateFirstPage || !customDateToggle || !customDateFirstPage || !customDateInput || !customDateFieldWrapper
+    || !overlayStyleToggle || !overlayStyleWrapper) {
     return;
   }
+
+  setupStyleSwitch(overlayStyleToggle, overlayStyleWrapper);
 
   paginateToggle.checked = false;
   paginateFirstPage.checked = false;
@@ -75,18 +115,44 @@ export function initPagination() {
   syncDateState();
 }
 
+// Toggle "Dual [switch] Pessoal": desmarcado = Dual, marcado = Pessoal. Os rótulos também alternam.
+function setupStyleSwitch(toggle, wrapper) {
+  const labels = wrapper.querySelectorAll('.pagination-style-label');
+
+  const syncLabels = () => {
+    const activeStyle = getStyleFromToggle(toggle);
+    labels.forEach(label => label.classList.toggle('active', label.dataset.style === activeStyle));
+  };
+
+  toggle.checked = false;
+  toggle.addEventListener('change', syncLabels);
+  labels.forEach(label => {
+    label.addEventListener('click', () => {
+      toggle.checked = label.dataset.style === OVERLAY_STYLES.PERSONAL;
+      syncLabels();
+    });
+  });
+  syncLabels();
+}
+
+function getStyleFromToggle(toggle) {
+  return toggle?.checked ? OVERLAY_STYLES.PERSONAL : OVERLAY_STYLES.DUAL;
+}
+
 export function getProcessingSettings() {
   const paginateToggle = document.getElementById('paginateToggle');
   const paginateFirstPage = document.getElementById('paginateFirstPage');
   const customDateToggle = document.getElementById('customDateToggle');
   const customDateFirstPage = document.getElementById('customDateFirstPage');
   const customDateInput = document.getElementById('customDateInput');
+  const overlayStyle = getStyleFromToggle(document.getElementById('overlayStyleToggle'));
 
   const customDate = formatDateForDisplay(customDateInput?.value || getTodayInputValue());
 
   return {
     shouldPaginate: Boolean(paginateToggle?.checked),
     shouldPaginateFirstPage: Boolean(paginateFirstPage?.checked),
+    overlayStyle,
     shouldApplyCustomDate: Boolean(customDateToggle?.checked),
     shouldApplyCustomDateFirstPage: Boolean(customDateFirstPage?.checked),
     customDate
@@ -94,6 +160,14 @@ export function getProcessingSettings() {
 }
 
 export async function loadOverlayFont(pdfDocument) {
+  return await loadFont(pdfDocument, FONT_PATHS.centuryGothic, PDFLib.StandardFonts.Helvetica);
+}
+
+export async function loadPersonalFont(pdfDocument) {
+  return await loadFont(pdfDocument, FONT_PATHS.openSansRegular, PDFLib.StandardFonts.Helvetica);
+}
+
+async function loadFont(pdfDocument, fontPath, fallbackFont) {
   try {
     const fontkitInstance = window.fontkit || globalThis.fontkit;
     if (!fontkitInstance) {
@@ -102,17 +176,17 @@ export async function loadOverlayFont(pdfDocument) {
 
     pdfDocument.registerFontkit(fontkitInstance);
 
-    const fontUrl = new URL('../../fonts/CenturyGothic/centurygothic.ttf', import.meta.url);
+    const fontUrl = new URL(fontPath, import.meta.url);
     const fontResponse = await fetch(fontUrl);
     if (!fontResponse.ok) {
-      throw new Error('Falha ao carregar centurygothic.ttf');
+      throw new Error(`Falha ao carregar ${fontPath}`);
     }
 
     const fontBytes = await fontResponse.arrayBuffer();
     return await pdfDocument.embedFont(fontBytes);
   } catch (error) {
-    console.warn('Fonte Century Gothic não encontrada, usando Helvetica como fallback', error);
-    return await pdfDocument.embedFont(PDFLib.StandardFonts.Helvetica);
+    console.warn(`Fonte ${fontPath} não encontrada, usando ${fallbackFont} como fallback`, error);
+    return await pdfDocument.embedFont(fallbackFont);
   }
 }
 
@@ -131,6 +205,69 @@ export function addPageNumbers(page, currentPageNumber, totalPages, shouldPagina
   drawRotatedText(page, `${displayTotalPages}`, displayTotalPages < 10
     ? PAGE_NUMBER_LAYOUT.totalSingleDigit
     : PAGE_NUMBER_LAYOUT.totalDoubleDigit, font);
+}
+
+export function addPersonalPageNumbers(page, currentPageNumber, totalPages, shouldPaginateFirstPage, font) {
+  if (!shouldPaginateFirstPage && currentPageNumber === 1) {
+    return;
+  }
+
+  const displayPageNumber = !shouldPaginateFirstPage ? currentPageNumber - 1 : currentPageNumber;
+  const displayTotalPages = !shouldPaginateFirstPage ? totalPages - 1 : totalPages;
+  const currentText = String(displayPageNumber).padStart(2, '0');
+  const totalText = String(displayTotalPages).padStart(2, '0');
+  const separatorText = '/';
+
+  const { width, height } = page.getSize();
+  const pageScale = getPageScale(width, height);
+  const layout = PERSONAL_PAGE_NUMBER_LAYOUT;
+
+  page.drawRectangle({
+    x: width * layout.cover.x,
+    y: height * layout.cover.y,
+    width: width * layout.cover.width,
+    height: height * layout.cover.height,
+    color: PERSONAL_COLORS.background
+  });
+
+  const fontSize = layout.size * pageScale;
+  const gap = layout.separatorGap * pageScale;
+  const parts = [currentText, separatorText, totalText];
+  const partWidths = parts.map(part => font.widthOfTextAtSize(part, fontSize));
+  const fullWidth = partWidths.reduce((sum, partWidth) => sum + partWidth, 0) + (gap * (parts.length - 1));
+  const baselineY = height * layout.textBaselineY;
+  let x = (width * layout.textCenterX) - (fullWidth / 2);
+
+  parts.forEach((part, index) => {
+    page.drawText(part, { x, y: baselineY, size: fontSize, color: PERSONAL_COLORS.text, font });
+    x += partWidths[index] + gap;
+  });
+}
+
+export function addPersonalCustomDate(page, customDate, font) {
+  if (!customDate) {
+    return;
+  }
+
+  const { width, height } = page.getSize();
+  const pageScale = getPageScale(width, height);
+  const layout = PERSONAL_DATE_LAYOUT;
+
+  page.drawRectangle({
+    x: width * layout.cover.x,
+    y: height * layout.cover.y,
+    width: width * layout.cover.width,
+    height: height * layout.cover.height,
+    color: PERSONAL_COLORS.background
+  });
+
+  page.drawText(customDate, {
+    x: width * layout.textX,
+    y: height * layout.textBaselineY,
+    size: layout.size * pageScale,
+    color: PERSONAL_COLORS.text,
+    font
+  });
 }
 
 export function addCustomDate(page, customDate, font) {

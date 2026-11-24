@@ -1,4 +1,13 @@
-import { addCustomDate, addPageNumbers, getProcessingSettings, loadOverlayFont } from '../ui/pagination.js';
+import {
+  addCustomDate,
+  addPageNumbers,
+  addPersonalCustomDate,
+  addPersonalPageNumbers,
+  getProcessingSettings,
+  loadOverlayFont,
+  loadPersonalFont,
+  OVERLAY_STYLES
+} from '../ui/pagination.js';
 import { validateFileName, formatFileName } from '../utils/index.js';
 import { previewPDF } from './pdfViewer.js';
 
@@ -43,6 +52,9 @@ export function initPDFMerger(getFiles, getPages, mergeBtn) {
     const sourceDocCache = new Map();
 
     const font = await loadOverlayFont(mergedPdf);
+    const usePersonalPagination = settings.shouldPaginate && settings.overlayStyle === OVERLAY_STYLES.PERSONAL;
+    const usePersonalDate = settings.shouldApplyCustomDate && settings.overlayStyle === OVERLAY_STYLES.PERSONAL;
+    const personalFont = (usePersonalPagination || usePersonalDate) ? await loadPersonalFont(mergedPdf) : null;
 
     for (const pageRef of selectedPages) {
       const { sourceFileIndex, sourcePageIndex } = pageRef;
@@ -68,12 +80,18 @@ export function initPDFMerger(getFiles, getPages, mergeBtn) {
       currentPageNumber++;
       const newPage = mergedPdf.addPage(copiedPages[0]);
 
-      if (settings.shouldPaginate) {
+      if (usePersonalPagination) {
+        addPersonalPageNumbers(newPage, currentPageNumber, totalPages, settings.shouldPaginateFirstPage, personalFont);
+      } else if (settings.shouldPaginate) {
         addPageNumbers(newPage, currentPageNumber, totalPages, settings.shouldPaginateFirstPage, font);
       }
 
       if (settings.shouldApplyCustomDate && (settings.shouldApplyCustomDateFirstPage || currentPageNumber > 1)) {
-        addCustomDate(newPage, settings.customDate, font);
+        if (usePersonalDate) {
+          addPersonalCustomDate(newPage, settings.customDate, personalFont);
+        } else {
+          addCustomDate(newPage, settings.customDate, font);
+        }
       }
     }
 
