@@ -30,6 +30,11 @@ export function initPDFMerger(getFiles, getPages, mergeBtn) {
       return;
     }
 
+    if (settings.skipPaginationError) {
+      showInvalidSkipPagesAlert(settings.skipPaginationError);
+      return;
+    }
+
     try {
       showProcessingAlert();
 
@@ -50,6 +55,11 @@ export function initPDFMerger(getFiles, getPages, mergeBtn) {
     let currentPageNumber = 0;
     const totalPages = selectedPages.length;
     const sourceDocCache = new Map();
+    const skipPages = settings.skipPaginationPages;
+    // Páginas puladas não entram na contagem: o total considera só as que serão numeradas
+    let numberedPageCount = 0;
+    const numberedTotal = Array.from({ length: totalPages }, (_, index) => index + 1)
+      .filter(pageNumber => !skipPages.has(pageNumber)).length;
 
     const font = await loadOverlayFont(mergedPdf);
     const usePersonalPagination = settings.shouldPaginate && settings.overlayStyle === OVERLAY_STYLES.PERSONAL;
@@ -80,10 +90,13 @@ export function initPDFMerger(getFiles, getPages, mergeBtn) {
       currentPageNumber++;
       const newPage = mergedPdf.addPage(copiedPages[0]);
 
-      if (usePersonalPagination) {
-        addPersonalPageNumbers(newPage, currentPageNumber, totalPages, settings.shouldPaginateFirstPage, personalFont);
-      } else if (settings.shouldPaginate) {
-        addPageNumbers(newPage, currentPageNumber, totalPages, settings.shouldPaginateFirstPage, font);
+      if (settings.shouldPaginate && !skipPages.has(currentPageNumber)) {
+        numberedPageCount++;
+        if (usePersonalPagination) {
+          addPersonalPageNumbers(newPage, numberedPageCount, numberedTotal, personalFont);
+        } else {
+          addPageNumbers(newPage, numberedPageCount, numberedTotal, font);
+        }
       }
 
       if (settings.shouldApplyCustomDate && (settings.shouldApplyCustomDateFirstPage || currentPageNumber > 1)) {
@@ -104,6 +117,14 @@ export function initPDFMerger(getFiles, getPages, mergeBtn) {
       icon: 'error',
       title: 'Nome inválido',
       text: 'O nome não pode conter: / \\ : * ? " < > |'
+    });
+  }
+
+  function showInvalidSkipPagesAlert(message) {
+    showThemedSwal({
+      icon: 'error',
+      title: 'Páginas sem numeração inválidas',
+      text: `${message} Use números e intervalos separados por vírgula, como 1, 5, 8-10.`
     });
   }
 

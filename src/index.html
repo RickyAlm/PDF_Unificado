@@ -239,9 +239,11 @@
               <input class="form-check-input" type="checkbox" id="paginateToggle">
               <label class="form-check-label" for="paginateToggle">Adicionar numeração de páginas</label>
             </div>
-            <div class="form-check form-switch mt-2">
-              <input class="form-check-input" type="checkbox" id="paginateFirstPage">
-              <label class="form-check-label" for="paginateFirstPage">Adicionar numeração na primeira página</label>
+            <div class="mt-3" id="paginateSkipWrapper">
+              <label for="paginateSkipPages" class="form-label">Páginas sem numeração</label>
+              <input type="text" class="form-control" id="paginateSkipPages" placeholder="Ex.: 1, 5, 8-10" autocomplete="off" aria-describedby="paginateSkipHelp paginateSkipFeedback">
+              <div class="invalid-feedback" id="paginateSkipFeedback">Use números e intervalos separados por vírgula, como 1, 5, 8-10.</div>
+              <div class="form-text" id="paginateSkipHelp">Essas páginas ficam sem número e não entram na contagem. Deixe vazio para numerar todas.</div>
             </div>
             <hr class="my-3">
             <div class="form-check form-switch">
