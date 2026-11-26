@@ -31,7 +31,12 @@ export function initPDFMerger(getFiles, getPages, mergeBtn) {
     }
 
     if (settings.skipPaginationError) {
-      showInvalidSkipPagesAlert(settings.skipPaginationError);
+      showInvalidPageListAlert('Páginas sem numeração inválidas', settings.skipPaginationError);
+      return;
+    }
+
+    if (settings.skipCustomDateError) {
+      showInvalidPageListAlert('Páginas sem data inválidas', settings.skipCustomDateError);
       return;
     }
 
@@ -99,7 +104,7 @@ export function initPDFMerger(getFiles, getPages, mergeBtn) {
         }
       }
 
-      if (settings.shouldApplyCustomDate && (settings.shouldApplyCustomDateFirstPage || currentPageNumber > 1)) {
+      if (settings.shouldApplyCustomDate && !settings.skipCustomDatePages.has(currentPageNumber)) {
         if (usePersonalDate) {
           addPersonalCustomDate(newPage, settings.customDate, personalFont);
         } else {
@@ -120,10 +125,10 @@ export function initPDFMerger(getFiles, getPages, mergeBtn) {
     });
   }
 
-  function showInvalidSkipPagesAlert(message) {
+  function showInvalidPageListAlert(title, message) {
     showThemedSwal({
       icon: 'error',
-      title: 'Páginas sem numeração inválidas',
+      title,
       text: `${message} Use números e intervalos separados por vírgula, como 1, 5, 8-10.`
     });
   }

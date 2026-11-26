@@ -52,11 +52,21 @@ export function initImageConverter(imageInput, imageFileNames, convertBtn) {
     }
 
     const pdfName = formatFileName(rawName || 'imagens_convertidas');
+    const settings = getProcessingSettings();
+
+    if (settings.skipCustomDateError) {
+      showThemedSwal({
+        icon: 'error',
+        title: 'Páginas sem data inválidas',
+        text: `${settings.skipCustomDateError} Use números e intervalos separados por vírgula, como 1, 5, 8-10.`
+      });
+      return;
+    }
 
     try {
       showProcessingAlert(images.length);
 
-      const pdfBytes = await buildPdfFromImages(images, getProcessingSettings());
+      const pdfBytes = await buildPdfFromImages(images, settings);
 
       showSuccessAlert(images.length, pdfBytes, pdfName);
     } catch (error) {
@@ -88,7 +98,7 @@ export function initImageConverter(imageInput, imageFileNames, convertBtn) {
         height
       });
 
-      if (settings.shouldApplyCustomDate && font && (settings.shouldApplyCustomDateFirstPage || index > 0)) {
+      if (settings.shouldApplyCustomDate && font && !settings.skipCustomDatePages.has(index + 1)) {
         drawDate(page, settings.customDate, font);
       }
     }

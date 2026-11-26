@@ -63,13 +63,13 @@ export function initPagination() {
   const paginateSkipPages = document.getElementById('paginateSkipPages');
   const paginateSkipWrapper = document.getElementById('paginateSkipWrapper');
   const customDateToggle = document.getElementById('customDateToggle');
-  const customDateFirstPage = document.getElementById('customDateFirstPage');
+  const customDateSkipPages = document.getElementById('customDateSkipPages');
   const customDateInput = document.getElementById('customDateInput');
   const customDateFieldWrapper = document.getElementById('customDateFieldWrapper');
   const overlayStyleToggle = document.getElementById('overlayStyleToggle');
   const overlayStyleWrapper = document.getElementById('overlayStyleWrapper');
 
-  if (!paginateToggle || !paginateSkipPages || !paginateSkipWrapper || !customDateToggle || !customDateFirstPage || !customDateInput || !customDateFieldWrapper
+  if (!paginateToggle || !paginateSkipPages || !paginateSkipWrapper || !customDateToggle || !customDateSkipPages || !customDateInput || !customDateFieldWrapper
     || !overlayStyleToggle || !overlayStyleWrapper) {
     return;
   }
@@ -79,28 +79,19 @@ export function initPagination() {
   paginateToggle.checked = false;
   paginateSkipPages.value = '';
   customDateToggle.checked = false;
-  customDateFirstPage.checked = false;
+  customDateSkipPages.value = '';
   customDateInput.value = getTodayInputValue();
 
   const syncPaginateState = () => {
-    paginateSkipPages.disabled = !paginateToggle.checked;
-    paginateSkipWrapper.classList.toggle('opacity-50', !paginateToggle.checked);
+    paginateSkipWrapper.classList.toggle('d-none', !paginateToggle.checked);
   };
 
-  const validateSkipPages = () => {
-    const { error } = parsePageList(paginateSkipPages.value);
-    paginateSkipPages.classList.toggle('is-invalid', Boolean(error));
+  const validatePageListInput = (input) => {
+    const { error } = parsePageList(input.value);
+    input.classList.toggle('is-invalid', Boolean(error));
   };
 
   const syncDateState = () => {
-    if (!customDateToggle.checked) {
-      customDateFirstPage.checked = false;
-      customDateFirstPage.disabled = true;
-    } else {
-      customDateFirstPage.checked = true;
-      customDateFirstPage.disabled = false;
-    }
-
     if (customDateToggle.checked && !customDateInput.value) {
       customDateInput.value = getTodayInputValue();
     }
@@ -109,7 +100,8 @@ export function initPagination() {
   };
 
   paginateToggle.addEventListener('change', syncPaginateState);
-  paginateSkipPages.addEventListener('input', validateSkipPages);
+  paginateSkipPages.addEventListener('input', () => validatePageListInput(paginateSkipPages));
+  customDateSkipPages.addEventListener('input', () => validatePageListInput(customDateSkipPages));
   customDateToggle.addEventListener('change', syncDateState);
 
   syncPaginateState();
@@ -144,21 +136,25 @@ export function getProcessingSettings() {
   const paginateToggle = document.getElementById('paginateToggle');
   const paginateSkipPages = document.getElementById('paginateSkipPages');
   const customDateToggle = document.getElementById('customDateToggle');
-  const customDateFirstPage = document.getElementById('customDateFirstPage');
+  const customDateSkipPages = document.getElementById('customDateSkipPages');
   const customDateInput = document.getElementById('customDateInput');
   const overlayStyle = getStyleFromToggle(document.getElementById('overlayStyleToggle'));
 
   const customDate = formatDateForDisplay(customDateInput?.value || getTodayInputValue());
   const shouldPaginate = Boolean(paginateToggle?.checked);
-  const skipPages = shouldPaginate ? parsePageList(paginateSkipPages?.value || '') : { pages: new Set(), error: null };
+  const shouldApplyCustomDate = Boolean(customDateToggle?.checked);
+  const noSkip = { pages: new Set(), error: null };
+  const skipPages = shouldPaginate ? parsePageList(paginateSkipPages?.value || '') : noSkip;
+  const skipDatePages = shouldApplyCustomDate ? parsePageList(customDateSkipPages?.value || '') : noSkip;
 
   return {
     shouldPaginate,
     skipPaginationPages: skipPages.pages,
     skipPaginationError: skipPages.error,
     overlayStyle,
-    shouldApplyCustomDate: Boolean(customDateToggle?.checked),
-    shouldApplyCustomDateFirstPage: Boolean(customDateFirstPage?.checked),
+    shouldApplyCustomDate,
+    skipCustomDatePages: skipDatePages.pages,
+    skipCustomDateError: skipDatePages.error,
     customDate
   };
 }
