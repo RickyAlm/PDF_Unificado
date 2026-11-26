@@ -239,7 +239,7 @@
               <input class="form-check-input" type="checkbox" id="paginateToggle">
               <label class="form-check-label" for="paginateToggle">Adicionar numeração de páginas</label>
             </div>
-            <div class="mt-3" id="paginateSkipWrapper">
+            <div class="mt-3 d-none" id="paginateSkipWrapper">
               <label for="paginateSkipPages" class="form-label">Páginas sem numeração</label>
               <input type="text" class="form-control" id="paginateSkipPages" placeholder="Ex.: 1, 5, 8-10" autocomplete="off" aria-describedby="paginateSkipHelp paginateSkipFeedback">
               <div class="invalid-feedback" id="paginateSkipFeedback">Use números e intervalos separados por vírgula, como 1, 5, 8-10.</div>
@@ -250,14 +250,14 @@
               <input class="form-check-input" type="checkbox" id="customDateToggle">
               <label class="form-check-label" for="customDateToggle">Habilitar alteração de data</label>
             </div>
-            <div class="form-check form-switch mt-2">
-              <input class="form-check-input" type="checkbox" id="customDateFirstPage">
-              <label class="form-check-label" for="customDateFirstPage">Adicionar data na primeira página</label>
-            </div>
             <div class="mt-3 d-none" id="customDateFieldWrapper">
               <label for="customDateInput" class="form-label">Data personalizada</label>
               <input type="date" class="form-control" id="customDateInput">
               <div class="form-text">Se a data não for informada, a data atual do sistema será utilizada.</div>
+              <label for="customDateSkipPages" class="form-label mt-3">Páginas sem data</label>
+              <input type="text" class="form-control" id="customDateSkipPages" placeholder="Ex.: 1, 5, 8-10" autocomplete="off" aria-describedby="customDateSkipHelp customDateSkipFeedback">
+              <div class="invalid-feedback" id="customDateSkipFeedback">Use números e intervalos separados por vírgula, como 1, 5, 8-10.</div>
+              <div class="form-text" id="customDateSkipHelp">Essas páginas mantêm a data original. Deixe vazio para alterar a data em todas.</div>
             </div>
           </div>
         </div>
