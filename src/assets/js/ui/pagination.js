@@ -60,7 +60,8 @@ const DATE_OVERLAY_LAYOUT = {
 
 export function initPagination() {
   const paginateToggle = document.getElementById('paginateToggle');
-  const paginateFirstPage = document.getElementById('paginateFirstPage');
+  const paginateSkipPages = document.getElementById('paginateSkipPages');
+  const paginateSkipWrapper = document.getElementById('paginateSkipWrapper');
   const customDateToggle = document.getElementById('customDateToggle');
   const customDateFirstPage = document.getElementById('customDateFirstPage');
   const customDateInput = document.getElementById('customDateInput');
@@ -68,7 +69,7 @@ export function initPagination() {
   const overlayStyleToggle = document.getElementById('overlayStyleToggle');
   const overlayStyleWrapper = document.getElementById('overlayStyleWrapper');
 
-  if (!paginateToggle || !paginateFirstPage || !customDateToggle || !customDateFirstPage || !customDateInput || !customDateFieldWrapper
+  if (!paginateToggle || !paginateSkipPages || !paginateSkipWrapper || !customDateToggle || !customDateFirstPage || !customDateInput || !customDateFieldWrapper
     || !overlayStyleToggle || !overlayStyleWrapper) {
     return;
   }
@@ -76,20 +77,19 @@ export function initPagination() {
   setupStyleSwitch(overlayStyleToggle, overlayStyleWrapper);
 
   paginateToggle.checked = false;
-  paginateFirstPage.checked = false;
+  paginateSkipPages.value = '';
   customDateToggle.checked = false;
   customDateFirstPage.checked = false;
   customDateInput.value = getTodayInputValue();
 
   const syncPaginateState = () => {
-    if (!paginateToggle.checked) {
-      paginateFirstPage.checked = false;
-      paginateFirstPage.disabled = true;
-      return;
-    }
+    paginateSkipPages.disabled = !paginateToggle.checked;
+    paginateSkipWrapper.classList.toggle('opacity-50', !paginateToggle.checked);
+  };
 
-    paginateFirstPage.checked = true;
-    paginateFirstPage.disabled = false;
+  const validateSkipPages = () => {
+    const { error } = parsePageList(paginateSkipPages.value);
+    paginateSkipPages.classList.toggle('is-invalid', Boolean(error));
   };
 
   const syncDateState = () => {
@@ -109,6 +109,7 @@ export function initPagination() {
   };
 
   paginateToggle.addEventListener('change', syncPaginateState);
+  paginateSkipPages.addEventListener('input', validateSkipPages);
   customDateToggle.addEventListener('change', syncDateState);
 
   syncPaginateState();
@@ -141,17 +142,20 @@ function getStyleFromToggle(toggle) {
 
 export function getProcessingSettings() {
   const paginateToggle = document.getElementById('paginateToggle');
-  const paginateFirstPage = document.getElementById('paginateFirstPage');
+  const paginateSkipPages = document.getElementById('paginateSkipPages');
   const customDateToggle = document.getElementById('customDateToggle');
   const customDateFirstPage = document.getElementById('customDateFirstPage');
   const customDateInput = document.getElementById('customDateInput');
   const overlayStyle = getStyleFromToggle(document.getElementById('overlayStyleToggle'));
 
   const customDate = formatDateForDisplay(customDateInput?.value || getTodayInputValue());
+  const shouldPaginate = Boolean(paginateToggle?.checked);
+  const skipPages = shouldPaginate ? parsePageList(paginateSkipPages?.value || '') : { pages: new Set(), error: null };
 
   return {
-    shouldPaginate: Boolean(paginateToggle?.checked),
-    shouldPaginateFirstPage: Boolean(paginateFirstPage?.checked),
+    shouldPaginate,
+    skipPaginationPages: skipPages.pages,
+    skipPaginationError: skipPages.error,
     overlayStyle,
     shouldApplyCustomDate: Boolean(customDateToggle?.checked),
     shouldApplyCustomDateFirstPage: Boolean(customDateFirstPage?.checked),
@@ -190,14 +194,38 @@ async function loadFont(pdfDocument, fontPath, fallbackFont) {
   }
 }
 
-export function addPageNumbers(page, currentPageNumber, totalPages, shouldPaginateFirstPage, font) {
-  if (!shouldPaginateFirstPage && currentPageNumber === 1) {
-    return;
+const MAX_PAGE_NUMBER = 9999;
+
+// Lê listas como "1, 5, 8-10" e devolve o conjunto de páginas (base 1). Aceita vírgula, ponto e vírgula ou espaço.
+export function parsePageList(text) {
+  const pages = new Set();
+  const tokens = String(text).replace(/\s*-\s*/g, '-').split(/[\s,;]+/).filter(Boolean);
+
+  for (const token of tokens) {
+    const match = token.match(/^(\d+)(?:-(\d+))?$/);
+    if (!match) {
+      return { pages: new Set(), error: `"${token}" não é um número ou intervalo válido.` };
+    }
+
+    const start = Number(match[1]);
+    const end = match[2] ? Number(match[2]) : start;
+    if (start < 1 || end < start) {
+      return { pages: new Set(), error: `"${token}" não é um intervalo válido.` };
+    }
+
+    if (end > MAX_PAGE_NUMBER) {
+      return { pages: new Set(), error: `"${token}" passa do limite de ${MAX_PAGE_NUMBER} páginas.` };
+    }
+
+    for (let pageNumber = start; pageNumber <= end; pageNumber++) {
+      pages.add(pageNumber);
+    }
   }
 
-  const displayPageNumber = !shouldPaginateFirstPage ? currentPageNumber - 1 : currentPageNumber;
-  const displayTotalPages = !shouldPaginateFirstPage ? totalPages - 1 : totalPages;
+  return { pages, error: null };
+}
 
+export function addPageNumbers(page, displayPageNumber, displayTotalPages, font) {
   drawRotatedText(page, `${displayPageNumber}`, displayPageNumber < 10
     ? PAGE_NUMBER_LAYOUT.currentSingleDigit
     : PAGE_NUMBER_LAYOUT.currentDoubleDigit, font);
@@ -207,13 +235,7 @@ export function addPageNumbers(page, currentPageNumber, totalPages, shouldPagina
     : PAGE_NUMBER_LAYOUT.totalDoubleDigit, font);
 }
 
-export function addPersonalPageNumbers(page, currentPageNumber, totalPages, shouldPaginateFirstPage, font) {
-  if (!shouldPaginateFirstPage && currentPageNumber === 1) {
-    return;
-  }
-
-  const displayPageNumber = !shouldPaginateFirstPage ? currentPageNumber - 1 : currentPageNumber;
-  const displayTotalPages = !shouldPaginateFirstPage ? totalPages - 1 : totalPages;
+export function addPersonalPageNumbers(page, displayPageNumber, displayTotalPages, font) {
   const currentText = String(displayPageNumber).padStart(2, '0');
   const totalText = String(displayTotalPages).padStart(2, '0');
   const separatorText = '/';
